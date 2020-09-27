@@ -5,18 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="styles.css">
+  <script type="text/javascript" src="index.js"></script>
   <title>Scribbles!</title>
 </head>
-<body>
-    <h1> Hello!</h1>
-    <div class="wrapper">
-        <div class="box scribble-board">Scribble Board</div>
-        <div class="box board-editor-menu">Board Editor Menu</div>
-        <div class="box element-editor-menu">Element Editor Menu</div>
-        <div class="box user-control-menu">User Control Menu</div>
-        
-      </div>
-    </body>
+<body class="text-teal-500 p-24 bg-gray-800">
 
-</body>
+  <h1 class="text-5xl font-bold text-gray-100 text-center tracking-wider"> Scribble</h1>
+
+  <div class="nav-bar justify-center flex flex-row font-light text-gray-100 pb-2">
+    <!-- <ul class="font-light text-gray-100 pb-8"> -->
+      <button class="p-2 m-1 hover:text-blue-500"> Save Scribble </button>
+      <button class="p-2 m-1 hover:text-pink-600">Delete Scribble </button>
+      <button class="p-2 m-1 hover:text-green-500"> View All Scribbles </button>
+      <button class="p-2 m-1 hover:text-purple-500"> Log Out </button>
+    <!-- </ul> -->
+  </div>
+
+    <div class="container-top flex flex-row flex-wrap justify-center">
+       
+        <div class="box board-editor-menu p-2 m-2 bg-gray-100 border-2 border-gray-700 rounded-lg shadow-lg">Board Editor Menu</div>
+        
+        <canvas id="scribble-board" class="scribble-canvas p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg"  width="950" height="600"></canvas>
+    </div>
+    
+    <div class="container-bottom flex justify-center">
+      <div class="box user-control-menu p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg">User Control Menu</div>
+        
+      <div class="box flex justify-around items-center element-editor-menu p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg">
+        <div id="unclicked-circle" class="rounded-full h-16 w-16 border-dashed border-4 border-gray-600 hover:border-blue-500"></div>
+        <div class="h-16 w-16 border-dashed border-4 border-gray-600 hover:border-pink-600"></div>
+        <div class="h-16 w-24 border-dashed border-4 border-gray-600 hover:border-green-500"></div>
+        <div>triangle</div>
+        <div>custom shape</div>
+          
+      </div>
+    </div>
+        
+        
+
+        
+  
+
+
+    
+
+  </body>
 </html>

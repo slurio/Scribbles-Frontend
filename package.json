@@ -1,0 +1,24 @@
+{
+  "name": "Scribbles",
+  "version": "1.0.0",
+  "description": "Meditating Scribbles",
+  "main": "index.js",
+  "dependencies": {
+    "tailwindcss": "^1.8.10"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build-css": "tailwindcss build styles.css -o styles.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anickel101/Scribbles.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anickel101/Scribbles/issues"
+  },
+  "homepage": "https://github.com/anickel101/Scribbles#readme"
+}

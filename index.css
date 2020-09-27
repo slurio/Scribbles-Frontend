@@ -1,38 +1,24 @@
-body {
-  margin: 40px;
+
+.board-editor-menu {
+    width: 150px;
+    height: 620px;
 }
 
-.wrapper {
-    display: grid;
-    grid-gap: 10px;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: minmax(400px, 1fr);
-    /* grid-auto-rows: 100px; */
-        background-color: #fff;
-    }
+.user-control-menu {
+    width: 180px;
+    height: 110px;
+}
 
-    .box {
-        border: 2px solid #444;
-        /* background-color: #444; */
-        color: black;
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 150%;
-    }
 
-    .scribble-board {
-        grid-column: 2 / 6;
-        grid-row: 1 / 6;
-    }
-    .board-editor-menu {
-        grid-column: 1 ;
-        grid-row: 1 / 6;
-    }
-    .element-editor-menu {
-        grid-column: 2 / 6 ;
-        grid-row: 6 ;
-    }
-    .user-control-menu {
-        grid-column: 1;
-        grid-row: 6;
-    }
+.element-editor-menu {
+    width: 750px;
+    height: 110px;
+}
+
+
+
+
+
+
+
+

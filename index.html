@@ -9,7 +9,7 @@
   <script type="text/javascript" src="index.js"></script>
   <title>Scribbles!</title>
 </head>
-<body class="text-teal-500 p-24 bg-gray-800">
+<body class="text-gray-600 p-24 bg-gray-800">
 
   <h1 class="text-5xl font-bold text-gray-100 text-center tracking-wider"> Scribble</h1>
 
@@ -26,23 +26,34 @@
        
         <div class="board-editor-menu p-2 m-2 bg-gray-100 border-2 border-gray-700 rounded-lg shadow-lg">Board Editor Menu</div>
         
-        <canvas id="scribble-board" class="scribble-canvas p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg"  width="950" height="600"></canvas>
+        <div class="canvases">
+
+          <canvas id="scribble-board" class="scribble-canvas p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg"  width="950" height="600" style="z-index: 1"></canvas>
+
+        </div>
     </div>
     
     <div class="container-bottom flex justify-center">
 
-      <div class="user-control-menu flex justify-around items-center p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg">
-        <button id="play-button">Play</button>
-        <button id="pause-button">Pause</button>
+      <div class="user-control-menu flex justify-between items-center p-2 m-2 ">
+        <button class="play-button border-4 border-gray-600 flex items-center justify-center p-2 rounded-full h-20 w-20 bg-gray-100 shadow-xl hover:border-gray-800">
+          <div class="play-graphic ml-2"></div>
+        </button>
+        <button class="pause-button border-4 border-gray-600 flex items-center justify-center p-2 rounded-full h-20 w-20 bg-gray-100 shadow-xl hover:border-gray-800">
+          <div class="pause-graphic"></div>
+        </button>
       </div>
         
       <div class="element-editor-menu flex justify-around items-center p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg">
-        <div id="unclicked-circle" class="rounded-full h-16 w-16 border-dashed border-4 border-gray-600 hover:border-blue-500"></div>
-        <div class="h-16 w-16 border-dashed border-4 border-gray-600 hover:border-pink-600"></div>
-        <div class="h-16 w-24 border-dashed border-4 border-gray-600 hover:border-green-500"></div>
-        <div>triangle</div>
-        <div>custom shape</div>    
+        <div id="unclicked-circle" class="rounded-full h-16 w-16 border-4 border-dashed border-gray-600 hover:border-blue-500"></div>
+        <div id="unclicked-square" class="h-16 w-16 border-4 border-dashed border-gray-600 hover:border-pink-600"></div>
+        <div id="unclicked-rectangle" class="h-16 w-24 border-4 border-dashed border-gray-600 hover:border-green-500"></div>
+        <!-- <div id="unclicked-triangle" class="">
+         
+        </div> -->
+        <div id="unclicked-custom" class="text-lg font-bold hover:text-purple-500">custom shape!</div>    
       </div>
+
     </div>
         
         

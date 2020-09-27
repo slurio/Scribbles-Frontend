@@ -1,19 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    //creates blue circle with given x,y positions
-    const createCircle = (xPosition, yPosition) => {
-
-        let scribbleCanvas = document.querySelector('#scribble-board')
-        
-        let ctx = scribbleCanvas.getContext('2d')
- 
-        //Blue Circle
-        ctx.beginPath()
-        ctx.fillStyle = '#3182CE'
-        ctx.arc(xPosition, yPosition, 15, 0, Math.PI * 2)
-        ctx.fill()
-
-    }
 
     const  clickHandler = () => {
 
@@ -54,9 +39,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 //creates circle with mouse x,y position on click                
                 createCircle(xPosition, yPosition)
+                // createCanvas(xPosition, yPosition)
             }
         })
     }
+
+        // creates blue circle with given x,y positions
+        const createCircle = (xPosition, yPosition) => {
+
+            let scribbleCanvas = document.querySelector('#scribble-board')
+            
+            let ctx = scribbleCanvas.getContext('2d')
+     
+            //Blue Circle
+            ctx.beginPath()
+            ctx.fillStyle = '#3182CE'
+            ctx.arc(xPosition, yPosition, 15, 0, Math.PI * 2)
+            ctx.fill()
+    
+        }
+
+        // const createCanvas = (xPosition, yPosition) => {
+        //     let scribbleCanvas = document.querySelector('#scribble-board')
+        //     let canvas = document.createElement('canvas')
+        //     canvas.width = 950
+        //     canvas.height = 600
+        //     let ctx = canvas.getContext('2d')
+        //     canvas.style.zIndex = 2
+
+        //     console.log(canvas)
+
+        //     ctx.beginPath()
+        //     ctx.fillStyle = '#3182CE'
+        //     ctx.arc(xPosition, yPosition, 15, 0, Math.PI * 2)
+        //     ctx.fill()
+
+        //     scribbleCanvas.prepend(canvas)
+
+        // }
 
     clickHandler()
     scribbleHandler()

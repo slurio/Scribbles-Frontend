@@ -1,5 +1,76 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+
+    let scribble_shapes = []
     
+    const scribble_id = 1
+    
+    const SCRIBBLES_URL = "http://localhost:3000/scribbles/"
+
+    const renderBackgroundCanvas = (scribble) => {
+        let canvas_container = document.querySelector(".canvases");
+        let bg_canvas = document.createElement("canvas");
+        bg_canvas.id = "background-canvas"
+        bg_canvas.style.zIndex = scribble.background_canvas.z_index;
+        bg_canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg"
+        canvas_container.append(bg_canvas);
+    }
+
+    const renderScribble = (scribble) => {
+        renderBackgroundCanvas(scribble);
+        renderCanvases(scribble);
+    }
+
+    const renderCanvases = (scribble) => {
+        if (scribble.circle_canvases.length > 0) {
+            renderCircleCanvases(scribble);
+        }
+    }
+    
+    const renderCircleCanvases = (scribble) => {
+        scribble.circle_canvases.map(renderCircle)
+    }
+
+    const renderCircle = (cirCan) => {
+        let canvas_container = document.querySelector(".canvases");
+        let canvas = document.createElement("canvas")
+        let context = canvas.getContext('2d')
+
+        //sets canvas attributes
+        canvas.dataset.id = cirCan.id
+        canvas.width = canvas_container.offsetWidth
+        canvas.height = canvas_container.offsetHeight
+        canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg"
+
+        // sets appropriate layering
+        canvas.style.zIndex = cirCan.z_index
+
+        // new Circle instance, push to global array
+        let circle = new Circle(cirCan.posX, cirCan.posY, cirCan.dX, cirCan.dY, cirCan.radius, cirCan.color, cirCan.sound, context)
+        scribble_shapes.push(circle)
+        circle.draw()
+
+      
+ // 
+        // // draws a shape
+        // context.beginPath()
+        // context.fillStyle = cirCan.color
+        // context.arc(cirCan.posX, cirCan.posY, cirCan.radius, 0, Math.PI * 2)
+        // context.fill()
+
+        //appends to DOM
+        canvas_container.append(canvas)
+    }
+    
+
+    const getScribble = (scribb_id) => {
+        
+        fetch(SCRIBBLES_URL+scribble_id)
+        .then(response => response.json())
+        .then(scribble => renderScribble(scribble))
+    }
+
+
     const  clickHandler = () => {
 
         document.addEventListener('click', e => {
@@ -11,7 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('#clicked-circle')) {
                 e.target.id = 'unclicked-circle'
                 e.target.classList.remove('bg-blue-500')
-            }   
+            } else if(e.target.matches('#play-button')) {
+                console.log(e.target)
+            } 
         })
     }   
 
@@ -82,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }
 
+    getScribble(scribble_id)
     clickHandler()
     scribbleHandler()
 

@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="index.css">
   <link rel="stylesheet" href="styles.css">
   <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript" src="circleCanvas.js"></script>
   <title>Scribbles!</title>
 </head>
 <body class="text-gray-600 p-24 bg-gray-800">
@@ -28,7 +29,7 @@
         
         <div class="canvases">
 
-          <canvas id="scribble-board" class="scribble-canvas p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg"  width="950" height="600" style="z-index: 1"></canvas>  
+          <!-- <canvas id="scribble-board" class="scribble-canvas p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg"  width="950" height="600" style="z-index: 1"></canvas>   -->
         
         </div>
     </div>
@@ -36,10 +37,10 @@
     <div class="container-bottom flex justify-center">
 
       <div class="user-control-menu flex justify-between items-center p-2 m-2 ">
-        <button class="play-button border-4 border-gray-600 flex items-center justify-center p-2 rounded-full h-20 w-20 bg-gray-100 shadow-xl hover:border-gray-800 transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
+        <button id="play-button" class="play-button border-4 border-gray-600 flex items-center justify-center p-2 rounded-full h-20 w-20 bg-gray-100 shadow-xl hover:border-gray-800 transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
           <div class="play-graphic ml-2"></div>
         </button>
-        <button class="pause-button border-4 border-gray-600 flex items-center justify-center p-2 rounded-full h-20 w-20 bg-gray-100 shadow-xl hover:border-gray-800 transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
+        <button id="pause-button" class="pause-button border-4 border-gray-600 flex items-center justify-center p-2 rounded-full h-20 w-20 bg-gray-100 shadow-xl hover:border-gray-800 transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-110">
           <div class="pause-graphic"></div>
         </button>
       </div>

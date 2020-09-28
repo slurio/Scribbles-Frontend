@@ -32,7 +32,8 @@
 
 canvas {
     position: absolute;
-    
+    width: 950px;
+    height: 600px;
     /* transform: translate(-50%,-50%);
     left: 50%;
     top: 50% */
@@ -45,3 +46,4 @@ canvas {
 
 
 
+e

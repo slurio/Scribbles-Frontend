@@ -1,7 +1,6 @@
+let scribble_shapes = []
+
 document.addEventListener('DOMContentLoaded', () => {
-
-
-    let scribble_shapes = []
     
     const scribble_id = 1
     
@@ -35,9 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let canvas_container = document.querySelector(".canvases");
         let canvas = document.createElement("canvas")
         let context = canvas.getContext('2d')
-
+        
         //sets canvas attributes
         canvas.dataset.id = cirCan.id
+        console.log("New Canvas with ID: ", cirCan.id)
         canvas.width = canvas_container.offsetWidth
         canvas.height = canvas_container.offsetHeight
         canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg"
@@ -46,17 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.style.zIndex = cirCan.z_index
 
         // new Circle instance, push to global array
-        let circle = new Circle(cirCan.posX, cirCan.posY, cirCan.dX, cirCan.dY, cirCan.radius, cirCan.color, cirCan.sound, context)
+        let circle = new Circle(cirCan.posX, cirCan.posY, cirCan.dx, cirCan.dy, cirCan.radius, cirCan.color, cirCan.sound, context, cirCan.id)
         scribble_shapes.push(circle)
+        console.log("New Circle with ID: ", cirCan.id)
         circle.draw()
-
-      
- // 
-        // // draws a shape
-        // context.beginPath()
-        // context.fillStyle = cirCan.color
-        // context.arc(cirCan.posX, cirCan.posY, cirCan.radius, 0, Math.PI * 2)
-        // context.fill()
 
         //appends to DOM
         canvas_container.append(canvas)
@@ -83,10 +76,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.target.id = 'unclicked-circle'
                 e.target.classList.remove('bg-blue-500')
             } else if(e.target.matches('#play-button')) {
-                console.log(e.target)
+                animateShapes()
+                console.log('play button clicked')
             } 
         })
     }   
+
+    //callback for requestAnimationFrame(callback)
+    const animateShapes = () => {
+        
+        for(let shape of scribble_shapes) {
+            let canvas = document.querySelector(`[data-id='${shape.id}']`)
+            shape.clear(canvas)
+            shape.nextStep()
+            shape.draw()
+
+            if(shape.posY + shape.dY > canvas.height || shape.posY + shape.dY < 0) {
+                shape.dY = -shape.dY;   
+            } else if (shape.posX + shape.dX > canvas.width || shape.posX + shape.dX < 0) {
+                shape.dX = -shape.dX;   
+            }
+        }
+        window.requestAnimationFrame(animateShapes)
+    }
 
     //When there is the situation of having the element at a different 
     //size than the bitmap itself, for example, the element is scaled 

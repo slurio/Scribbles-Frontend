@@ -1,5 +1,5 @@
 class Circle {
-    constructor(posX, posY, dX, dY, radius, color, sound, context) {
+    constructor(posX, posY, dX, dY, radius, color, sound, context, id) {
         this.posX = posX,
         this.posY = posY,
         this.dX = dX,
@@ -7,7 +7,8 @@ class Circle {
         this.radius = radius,
         this.color = color,
         this.sound = sound,
-        this.context = context
+        this.context = context,
+        this.id = id
     }
 
     draw() {
@@ -20,5 +21,9 @@ class Circle {
     nextStep() {
         this.posX += this.dX;
         this.posY += this.dY;
+    }
+
+    clear(canvas) {
+        this.context.clearRect(0,0, canvas.width, canvas.height)
     }
 }

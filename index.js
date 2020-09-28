@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // creates blue circle with given x,y positions
         const createCircle = (xPosition, yPosition) => {
-
+            debugger
             let scribbleCanvas = document.querySelector('#scribble-board')
             
             let ctx = scribbleCanvas.getContext('2d')

@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas_container.dataset.scribble_id = scribble.id
         let bg_canvas = document.createElement("canvas");
         bg_canvas.id = "background-canvas"
-        console.log("in renderBackgroundCanvas(), scribble.background = ", scribble.background_canvas)
         bg_canvas.style.zIndex = scribble.background_canvas.z_index;
         bg_canvas.style.background = scribble.background_canvas.background_style
         bg_canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
@@ -81,12 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('#clicked-circle')) {
                 e.target.id = 'unclicked-circle'
                 e.target.classList.remove('bg-blue-500')
+                document.querySelector('#element-form').remove()
             } else if(e.target.matches('#play-button') || e.target.matches('.play-graphic')) {
                 playAnimation()
-                console.log('play button clicked')
             } else if(e.target.matches('#pause-button') || e.target.matches('.pause-graphic')) {
                 pauseAnimation()
-                console.log('pause button clicked')
             } else if(e.target.matches('#new-scribble')) {
                 newScribble()
             } else if(e.target.matches('#log-out')) {
@@ -137,6 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement) {
+                const circleUserBar = document.querySelector('#clicked-circle')
+                circleUserBar.id = 'unclicked-circle'
+                circleUserBar.classList.remove('bg-blue-500')
                 
                 let rect = lastCanvas.getBoundingClientRect()
 
@@ -224,8 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault()
             if(e.target.matches('#element-form')) {
                 getElementFormInfo(e.target)
-                //e.target.reset()
-                //need to remove form once submit is clicked
             }
         })
     }
@@ -234,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const getElementFormInfo = target => {
         //sound not created in form yet
         //or id
+        
         const shape = target.dataset.shape
         const color = target.color.value
         const dx = target.dx.value
@@ -249,6 +249,8 @@ document.addEventListener('DOMContentLoaded', () => {
             radius: radius,
             sound: sound
         }
+
+        target.remove()
     }
 
     const newScribble = () => {
@@ -286,7 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(scribble => {
             newDefaultBackground(scribble)
-            console.log("after new scribble is created", scribble)
         })
     }
 
@@ -310,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(bgCanvas => getScribble(bgCanvas.scribble.id))
     }
+
 
     const addLogInListener = () => {
         let userForm = document.querySelector(".login-form")

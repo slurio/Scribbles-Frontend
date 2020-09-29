@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     //for passing information to create a new shape
     let shapeInfo
     const SCRIBBLES_URL = "http://localhost:3000/scribbles/"
+    const CIRCLES_URL = "http://localhost:3000/circle_canvases/"
 
-    const getScribble = (scribb_id) => {  
+    const getScribble = (scribble_id) => {  
         fetch(SCRIBBLES_URL+scribble_id)
         .then(response => response.json())
         .then(scribble => renderScribble(scribble))
@@ -123,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
             //to get the last canvas in div canvases
             const lastCanvas = document.querySelector('.canvases').lastElementChild
           
-
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement) {
 
@@ -134,6 +134,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 xPosition = (e.clientX - rect.left) * scaleX
                 yPosition = (e.clientY - rect.top) * scaleY
+
+                // Save element to DB
+                //renderCircle(cirCan) as a callback
+
+                let z_index = parseInt(lastCanvas.style.zIndex) + 1
+
+                let circleObj = {
+                    posX: xPosition,
+                    posY: yPosition,
+                    dx: shapeInfo['dx'],
+                    dy: shapeInfo['dy'],
+                    color: shapeInfo['color'],
+                    radius: shapeInfo['radius'],
+                    sound: shapeInfo['sound'],
+                    z_index: z_index,
+                    scribble_id: scribble_id
+                }
+
+                let fetchOptions = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accepts": "application/json"
+                    },
+                    body: JSON.stringify(circleObj)
+                }
+
+                fetch(CIRCLES_URL, fetchOptions)
+                .then(response => response.json())
+                .then(circleCanvas => console.log(circleCanvas))
+
+                
 
                 //render a circle with x and y position plus shapeinfo variable
                 //clear shapeinfo once done
@@ -153,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // sets appropriate layering
         let canvasZIndex = parseInt(canvas_container.lastElementChild.style.zIndex) + 1
         canvas.style.zIndex = canvasZIndex
-        
+
         //sets canvas attributes
         // need to do below once saved? 
         //canvas.dataset.id = cirCan.id
@@ -255,6 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         console.log(shapeInfo)      
     }
+
+
+
 
 
     getScribble(scribble_id)

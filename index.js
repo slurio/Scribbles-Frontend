@@ -2,17 +2,22 @@ let scribble_shapes = []
 
 document.addEventListener('DOMContentLoaded', () => {
     
+    let currentUserId = 1;
     const scribble_id = 1
     let animating = false;
     //for passing information to create a new shape
     let shapeInfo
     const SCRIBBLES_URL = "http://localhost:3000/scribbles/"
     const CIRCLES_URL = "http://localhost:3000/circle_canvases/"
+    const BG_URL = "http://localhost:3000/background_canvases/"
 
     const getScribble = (scribble_id) => {  
         fetch(SCRIBBLES_URL+scribble_id)
         .then(response => response.json())
-        .then(scribble => renderScribble(scribble))
+        .then(scribble => {
+            console.log("getScribble called: ", scribble)
+            renderScribble(scribble)
+        })
     }
 
     const renderScribble = (scribble) => {
@@ -24,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let canvas_container = document.querySelector(".canvases");
         let bg_canvas = document.createElement("canvas");
         bg_canvas.id = "background-canvas"
+        console.log("in renderBackgroundCanvas(), scribble.background = ", scribble.background_canvas)
         bg_canvas.style.zIndex = scribble.background_canvas.z_index;
         bg_canvas.style.background = scribble.background_canvas.background_style
         bg_canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
@@ -80,7 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('#pause-button') || e.target.matches('.pause-graphic')) {
                 pauseAnimation()
                 console.log('pause button clicked')
-            } 
+            } else if(e.target.matches('#new-scribble')) {
+                newScribble()
+            }
         })
     }
 
@@ -161,56 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch(CIRCLES_URL, fetchOptions)
                 .then(response => response.json())
                 .then(circleCanvas => renderCircle(circleCanvas))
-
-                
-
-                //render a circle with x and y position plus shapeinfo variable
-                //clear shapeinfo once done
-                //save to db or wait?
-                // createCanvas(xPosition, yPosition)
-                // renderNewCircle(xPosition, yPosition)
                
             }
         })
     }
-
-    // const renderNewCircle = (xPosition, yPosition) => {
-    //     let canvas_container = document.querySelector(".canvases");
-    //     let canvas = document.createElement("canvas")
-    //     let context = canvas.getContext('2d')
-
-    //     // sets appropriate layering
-    //     let canvasZIndex = parseInt(canvas_container.lastElementChild.style.zIndex) + 1
-    //     canvas.style.zIndex = canvasZIndex
-
-    //     //sets canvas attributes
-    //     // need to do below once saved? 
-    //     //canvas.dataset.id = cirCan.id
-
-    //     canvas.width = canvas_container.offsetWidth
-    //     canvas.height = canvas_container.offsetHeight
-    //     canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
-
-    //     // new Circle instance, push to global array
-    //     //no sound or id need to add 
-    //     let color = shapeInfo['color']
-    //     let radius = shapeInfo['radius']
-    //     let dx = shapeInfo['dx']
-    //     let dy = shapeInfo['dy']
-    //     let posX = xPosition
-    //     let posY = yPosition
-    //     let sound = shapeInfo['sound']
-    //     let id = NaN
-
-    //     let circle = new Circle(posX, posY, dx, dy, radius, color, sound, context, id)
-    //     scribble_shapes.push(circle)
-
-    //     console.log(scribble_shapes)
-    //     circle.draw()
-
-    //     //appends to DOM
-    //     canvas_container.append(canvas)
-    // }
 
     const renderForm = target => {
           
@@ -259,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 //e.target.reset()
                 //need to remove form once submit is clicked
             }
-            
         })
     }
 
@@ -282,12 +243,82 @@ document.addEventListener('DOMContentLoaded', () => {
             radius: radius,
             sound: sound
         }
-        console.log(shapeInfo)      
     }
 
+    const newScribble = () => {
+        clearCanvases()
+        postScribble()
+    }
 
+    const clearCanvases = () => {
+        scribble_shapes = []
+        let canvas_container = document.querySelector(".canvases");
+        removeAllChildNodes(canvas_container)
+    }
 
+    const removeAllChildNodes = (parent) => {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+    }
 
+    const postScribble = () => {
+
+        let randId = Math.floor(Math.random() * Math.floor(1000))
+
+        let scribbleObj = {
+            title: "New Scribble" + randId,
+            user_id: currentUserId
+        }
+
+        let fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accepts": "application/json"
+            },
+            body: JSON.stringify(scribbleObj)
+        }
+
+        fetch(SCRIBBLES_URL, fetchOptions)
+        .then(response => response.json())
+        .then(scribble => {
+            newDefaultBackground(scribble)
+            console.log("after new scribble is created", scribble)
+
+        })
+    }
+
+    const newDefaultBackground = (scribble) => {
+        let bgObj = {
+            background_style: "white",
+            z_index: 1,
+            scribble_id: scribble.id
+        }
+
+        let fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accepts": "application/json"
+            },
+            body: JSON.stringify(bgObj)
+        }
+
+        fetch(BG_URL, fetchOptions)
+        .then(response => response.json())
+        .then(bgCanvas => getScribble(bgCanvas.scribble.id))
+    }
+
+    // NEW SCRIBBLE FUNCTION
+
+    // 1. click listener for "new scribble button
+    // 2. clear out scribble_shapes array
+    // 3. create a scribble, assign it a user_id
+    //  a. save to database
+    // 4. create a background canvas
+    //  a. save to database, assign it a scribble ID
+    // 5. renderScribble(scribble) to DOM
 
     getScribble(scribble_id)
     clickHandler()

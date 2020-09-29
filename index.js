@@ -2,20 +2,20 @@ let scribble_shapes = []
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    let currentUserId = 1;
-    const scribble_id = 1
+
+    let currentUserId;
     let animating = false;
     //for passing information to create a new shape
     let shapeInfo
     const SCRIBBLES_URL = "http://localhost:3000/scribbles/"
     const CIRCLES_URL = "http://localhost:3000/circle_canvases/"
     const BG_URL = "http://localhost:3000/background_canvases/"
+    const USERS_URL = "http://localhost:3000/users/"
 
     const getScribble = (scribble_id) => {  
         fetch(SCRIBBLES_URL+scribble_id)
         .then(response => response.json())
         .then(scribble => {
-            console.log("getScribble called: ", scribble)
             renderScribble(scribble)
         })
     }
@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderBackgroundCanvas = (scribble) => {
         let canvas_container = document.querySelector(".canvases");
+        canvas_container.dataset.scribble_id = scribble.id
         let bg_canvas = document.createElement("canvas");
         bg_canvas.id = "background-canvas"
         console.log("in renderBackgroundCanvas(), scribble.background = ", scribble.background_canvas)
@@ -88,6 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('pause button clicked')
             } else if(e.target.matches('#new-scribble')) {
                 newScribble()
+            } else if(e.target.matches('#log-out')) {
+                clearCanvases()
+                toggleLogInModal()
             }
         })
     }
@@ -125,16 +129,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const scribbleHandler = () => {
         
         document.addEventListener('click', e => {
-
             //check to see if circle was clicked
             const circleElement = document.querySelector('#clicked-circle')
-       
+            
             //to get the last canvas in div canvases
             const lastCanvas = document.querySelector('.canvases').lastElementChild
-          
+            
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement) {
-
+                
                 let rect = lastCanvas.getBoundingClientRect()
 
                 let scaleX = lastCanvas.width / rect.width
@@ -145,6 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let z_index = parseInt(lastCanvas.style.zIndex) + 1
 
+                
+                let canvas_container = document.querySelector(".canvases");
+
                 let circleObj = {
                     posX: xPosition,
                     posY: yPosition,
@@ -154,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     radius: shapeInfo['radius'],
                     sound: shapeInfo['sound'],
                     z_index: z_index,
-                    scribble_id: scribble_id
+                    scribble_id: canvas_container.dataset.scribble_id
                 }
 
                 let fetchOptions = {
@@ -263,14 +269,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const postScribble = () => {
-
         let randId = Math.floor(Math.random() * Math.floor(1000))
-
         let scribbleObj = {
             title: "New Scribble" + randId,
             user_id: currentUserId
         }
-
         let fetchOptions = {
             method: "POST",
             headers: {
@@ -279,13 +282,11 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(scribbleObj)
         }
-
         fetch(SCRIBBLES_URL, fetchOptions)
         .then(response => response.json())
         .then(scribble => {
             newDefaultBackground(scribble)
             console.log("after new scribble is created", scribble)
-
         })
     }
 
@@ -310,19 +311,81 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(bgCanvas => getScribble(bgCanvas.scribble.id))
     }
 
-    // NEW SCRIBBLE FUNCTION
+    const addLogInListener = () => {
+        let userForm = document.querySelector(".login-form")
+        userForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            let username = userForm.username.value
+            e.target.reset()
+            getUser(username)
+            //get the username from form
+            //fetch request with that username to create or find user
+        })
+    }
+    
+    const getUser = (username) => {
+        userObj = {
+            username: username
+        }
 
-    // 1. click listener for "new scribble button
-    // 2. clear out scribble_shapes array
-    // 3. create a scribble, assign it a user_id
-    //  a. save to database
-    // 4. create a background canvas
-    //  a. save to database, assign it a scribble ID
-    // 5. renderScribble(scribble) to DOM
+        fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accepts": "application/json"
+            },
+            body: JSON.stringify(userObj)
+        }
 
-    getScribble(scribble_id)
+        fetch(USERS_URL, fetchOptions)
+        .then(response => response.json())
+        .then(user => {
+           
+            currentUserId = user.id
+
+            if(user.scribbles.length === 0){
+                newScribble()
+                toggleLogInModal();
+            } else {
+                getScribble(user.scribbles[0].id)
+                toggleLogInModal();
+            }
+        })
+    }
+
+    const toggleLogInModal = () => {
+        let modal = document.querySelector(".modal");
+        if (!!currentUserId) {
+            modal.classList.toggle("show-modal");
+            // form to get new/exiting user id with fetch
+        } else if (currentUserId) {
+            currentUserId = null
+            modal.classList.toggle("show-modal");
+        }
+    }
+
+    addLogInListener();
+    toggleLogInModal();
     clickHandler()
     scribbleHandler()
     submitHandler()
 
 })
+
+
+// const addDropDownListener = () => {
+//     let dropDown = document.getElementById("breed-dropdown");
+//     dropDown.addEventListener("change", (e) => {
+//         let option = e.target.value;
+//         let sortedBreeds = sortBreeds(option);
+//         let breedUl = document.getElementById("dog-breeds");
+//         breedUl.innerHTML = "";
+//         sortedBreeds.forEach(breed => renderBreed(breed));
+//     });
+// };
+
+{/* <select id="breed-dropdown" name="select-breed">
+<option value="a">a</option>
+<option value="b">b</option>
+<option value="c">c</option>
+<option value="d">d</option> */}

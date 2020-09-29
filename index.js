@@ -135,9 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 xPosition = (e.clientX - rect.left) * scaleX
                 yPosition = (e.clientY - rect.top) * scaleY
 
-                // Save element to DB
-                //renderCircle(cirCan) as a callback
-
                 let z_index = parseInt(lastCanvas.style.zIndex) + 1
 
                 let circleObj = {
@@ -163,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 fetch(CIRCLES_URL, fetchOptions)
                 .then(response => response.json())
-                .then(circleCanvas => console.log(circleCanvas))
+                .then(circleCanvas => renderCircle(circleCanvas))
 
                 
 
@@ -171,49 +168,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 //clear shapeinfo once done
                 //save to db or wait?
                 // createCanvas(xPosition, yPosition)
-                renderNewCircle(xPosition, yPosition)
+                // renderNewCircle(xPosition, yPosition)
                
             }
         })
     }
 
-    const renderNewCircle = (xPosition, yPosition) => {
-        let canvas_container = document.querySelector(".canvases");
-        let canvas = document.createElement("canvas")
-        let context = canvas.getContext('2d')
+    // const renderNewCircle = (xPosition, yPosition) => {
+    //     let canvas_container = document.querySelector(".canvases");
+    //     let canvas = document.createElement("canvas")
+    //     let context = canvas.getContext('2d')
 
-        // sets appropriate layering
-        let canvasZIndex = parseInt(canvas_container.lastElementChild.style.zIndex) + 1
-        canvas.style.zIndex = canvasZIndex
+    //     // sets appropriate layering
+    //     let canvasZIndex = parseInt(canvas_container.lastElementChild.style.zIndex) + 1
+    //     canvas.style.zIndex = canvasZIndex
 
-        //sets canvas attributes
-        // need to do below once saved? 
-        //canvas.dataset.id = cirCan.id
+    //     //sets canvas attributes
+    //     // need to do below once saved? 
+    //     //canvas.dataset.id = cirCan.id
 
-        canvas.width = canvas_container.offsetWidth
-        canvas.height = canvas_container.offsetHeight
-        canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
+    //     canvas.width = canvas_container.offsetWidth
+    //     canvas.height = canvas_container.offsetHeight
+    //     canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
 
-        // new Circle instance, push to global array
-        //no sound or id need to add 
-        let color = shapeInfo['color']
-        let radius = shapeInfo['radius']
-        let dx = shapeInfo['dx']
-        let dy = shapeInfo['dy']
-        let posX = xPosition
-        let posY = yPosition
-        let sound = shapeInfo['sound']
-        let id = NaN
+    //     // new Circle instance, push to global array
+    //     //no sound or id need to add 
+    //     let color = shapeInfo['color']
+    //     let radius = shapeInfo['radius']
+    //     let dx = shapeInfo['dx']
+    //     let dy = shapeInfo['dy']
+    //     let posX = xPosition
+    //     let posY = yPosition
+    //     let sound = shapeInfo['sound']
+    //     let id = NaN
 
-        let circle = new Circle(posX, posY, dx, dy, radius, color, sound, context, id)
-        scribble_shapes.push(circle)
+    //     let circle = new Circle(posX, posY, dx, dy, radius, color, sound, context, id)
+    //     scribble_shapes.push(circle)
 
-        console.log(scribble_shapes)
-        circle.draw()
+    //     console.log(scribble_shapes)
+    //     circle.draw()
 
-        //appends to DOM
-        canvas_container.append(canvas)
-    }
+    //     //appends to DOM
+    //     canvas_container.append(canvas)
+    // }
 
     const renderForm = target => {
           
@@ -231,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <br>
                 <label> Sound </label>
-                <input type="radio" name="sound" value="filler">
+                <input type="radio" name="sound" value="c">
                 <label>test</label>
                 <br>
                 <br>

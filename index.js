@@ -1,9 +1,12 @@
 let scribble_shapes = []
 
+
 document.addEventListener('DOMContentLoaded', () => {
     
     const scribble_id = 1
     let animating = false;
+    //for passing information to create a new shape
+    let shapeInfo
     const SCRIBBLES_URL = "http://localhost:3000/scribbles/"
 
     const getScribble = (scribb_id) => {
@@ -68,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(e.target.matches('#unclicked-circle')) {
                 e.target.classList.add('bg-blue-500')
                 e.target.id = 'clicked-circle'
+                renderForm(e.target)
             } else if(e.target.matches('#clicked-circle')) {
                 e.target.id = 'unclicked-circle'
                 e.target.classList.remove('bg-blue-500')
@@ -110,59 +114,137 @@ document.addEventListener('DOMContentLoaded', () => {
     //When there is the situation of having the element at a different 
     //size than the bitmap itself, for example, the element is scaled 
     //using CSS or there is pixel-aspect ratio etc. you will have to address this.
-
+    //for adding a shape to scribble
     const scribbleHandler = () => {
         
         document.addEventListener('click', e => {
-            const clickedCircle = document.querySelector('#clicked-circle')
-            const unclickedCircle = document.querySelector('#unclicked-circle')
 
-            if (e.target.matches("#clicked-circle")) {
-                console.log("unclicked circle CLICKED")
-            }
+            //check to see if circle was clicked
+            const circleElement = document.querySelector('#clicked-circle')
+       
+            //to get the last canvas in div canvases
+            const lastCanvas = document.querySelector('.canvases').lastElementChild
+          
 
             //click listner for scribble canvas to get mouse x/y position
-            // if(e.target.matches('#scribble-board') && circleElement) {
-            // if(e.target.tagName.toLowerCase() === 'canvas') {  
-                
-            //     let canvas = e.target
+            if(e.target === lastCanvas && circleElement) {
+                console.log('passed!')
+                let canvas = e.target
 
-            //     let rect = canvas.getBoundingClientRect()
+                let rect = canvas.getBoundingClientRect()
 
-            //     let scaleX = canvas.width / rect.width
-            //     let scaleY = canvas.height / rect.height
+                let scaleX = canvas.width / rect.width
+                let scaleY = canvas.height / rect.height
 
-            //     xPosition = (e.clientX - rect.left) * scaleX
-            //     yPosition = (e.clientY - rect.top) * scaleY
+                xPosition = (e.clientX - rect.left) * scaleX
+                yPosition = (e.clientY - rect.top) * scaleY
 
-            //     //creates circle with mouse x,y position on click                
-            //     // createCircle(xPosition, yPosition)
-            //     createCanvas(xPosition, yPosition)
-            // }
+                //render a circle with x and y position plus shapeinfo variable
+                //clear shapeinfo once done
+                //save to db or wait?
+                createCanvas(xPosition, yPosition)
+            }
         })
     }
 
-        const createCanvas = (xPosition, yPosition) => {
-            let canvasContainer = document.querySelector('.canvases')
-            let canvasZIndex = parseInt(canvasContainer.lastElementChild.style.zIndex) + 1
-            let canvas = document.createElement('canvas')
-            canvas.width = canvasContainer.offsetWidth
-            canvas.height = canvasContainer.offsetHeight
-            let ctx = canvas.getContext('2d')
-            canvas.style.zIndex = canvasZIndex
+    const renderForm = target => {
+          
+        //render a pop up menu with options for velocity/color/sound/etc after cicle in element menu
 
+            const body = document.querySelector('body')
+            elementForm = document.createElement('form')
+            elementForm.id = 'element-form'
+            elementForm.className = 'bg-gray-400'
+            elementForm.dataset.shape = 'circle'
+            
+            elementForm.innerHTML = `
+                <label >COLOR</label><br>
+                <input type="radio" id="red" name="color" value="red">
+                <label>Red</label>
+                <input type="radio" id="green" name="color" value="green">
+                <label>Green</label>
+                <input type="radio" id="blue" name="color" value="blue">
+                <label>Blue</label>
+                <input type="radio" id="orange" name="color" value="orange">
+                <label>Orange</label> 
+                <input type="radio" id="yellow" name="color" value="yellow">
+                <label>Yellow</label>
+                <input type="radio" id="purple" name="color" value="purple">
+                <label>Purple</label>
+                <input type="radio" id="pink" name="color" value="pink">
+                <label>Pink</label>
+                <br>
+                <br>
+                <label> Sound </label>
+                <br>
+                <br>
+                <label >Speed</label><br>
+                <input type="number" id="dx" name="dx" value="dx">
+                <label>dx</label>
+                <input type="number" id="dy" name="dy" value="dy">
+                <label>dy</label>
+                <br>
+              
+                <input type="submit" value="Click + press on scribble to place!" >
+            `
+            body.insertAdjacentElement('beforeend', elementForm)
+               
+    }
 
-            ctx.beginPath()
-            ctx.fillStyle = '#3182CE'
-            ctx.arc(xPosition, yPosition, 15, 0, Math.PI * 2)
-            ctx.fill()
+    const submitHandler = () => {
 
-            canvasContainer.append(canvas)
+        document.addEventListener('submit', e => {
+            e.preventDefault()
+            if(e.target.matches('#element-form')) {
+                getElementFormInfo(e.target)
+                e.target.reset()
+                //need to remove form once submit is clicked
+            }
+            
+        })
+    }
 
+    const getElementFormInfo = target => {
+        //sound not created in form yet
+        const shape = target.dataset.shape
+        const color = target.color.value
+        const dx = target.dx.value
+        const dy = target.dy.value
+       
+        shapeInfo = {
+            shape: shape,
+            color: color,
+            dx: dx,
+            dy: dy
         }
+        console.log(shapeInfo)      
+    }
+
+    
+
+
+        // const createCanvas = (xPosition, yPosition) => {
+        //     let canvasContainer = document.querySelector('.canvases')
+        //     let canvasZIndex = parseInt(canvasContainer.lastElementChild.style.zIndex) + 1
+        //     let canvas = document.createElement('canvas')
+        //     canvas.width = canvasContainer.offsetWidth
+        //     canvas.height = canvasContainer.offsetHeight
+        //     let ctx = canvas.getContext('2d')
+        //     canvas.style.zIndex = canvasZIndex
+
+
+        //     ctx.beginPath()
+        //     ctx.fillStyle = '#3182CE'
+        //     ctx.arc(xPosition, yPosition, 15, 0, Math.PI * 2)
+        //     ctx.fill()
+
+        //     canvasContainer.append(canvas)
+
+        // }
 
     getScribble(scribble_id)
     clickHandler()
     scribbleHandler()
+    submitHandler()
 
 })

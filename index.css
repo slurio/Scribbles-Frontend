@@ -21,7 +21,9 @@
     border-top: 26px solid transparent;
     border-left: 30px solid #718096;
     border-bottom: 26px solid transparent;
+    margin-left: 8px;
 }
+
 
 .pause-graphic {
     width: 30px;

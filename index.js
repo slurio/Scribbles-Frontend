@@ -71,10 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('#clicked-circle')) {
                 e.target.id = 'unclicked-circle'
                 e.target.classList.remove('bg-blue-500')
-            } else if(e.target.matches('#play-button')) {
+            } else if(e.target.matches('#play-button') || e.target.matches('.play-graphic')) {
                 playAnimation()
                 console.log('play button clicked')
-            } else if(e.target.matches('#pause-button')) {
+            } else if(e.target.matches('#pause-button') || e.target.matches('.pause-graphic')) {
                 pauseAnimation()
                 console.log('pause button clicked')
             } 

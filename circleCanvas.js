@@ -26,4 +26,12 @@ class Circle {
     clear(canvas) {
         this.context.clearRect(0,0, canvas.width, canvas.height)
     }
+
+    checkBoundaries(canvas) {
+        if(this.posY + this.dY > canvas.height || this.posY + this.dY < 0) {
+            this.dY = -this.dY;   
+        } else if (this.posX + this.dX > canvas.width || this.posX + this.dX < 0) {
+            this.dX = -this.dX;   
+        }
+    }
 }

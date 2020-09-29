@@ -3,21 +3,28 @@ let scribble_shapes = []
 document.addEventListener('DOMContentLoaded', () => {
     
     const scribble_id = 1
-    
+    let animating = false;
     const SCRIBBLES_URL = "http://localhost:3000/scribbles/"
+
+    const getScribble = (scribb_id) => {
+        
+        fetch(SCRIBBLES_URL+scribble_id)
+        .then(response => response.json())
+        .then(scribble => renderScribble(scribble))
+    }
+
+    const renderScribble = (scribble) => {
+        renderBackgroundCanvas(scribble);
+        renderCanvases(scribble);
+    }
 
     const renderBackgroundCanvas = (scribble) => {
         let canvas_container = document.querySelector(".canvases");
         let bg_canvas = document.createElement("canvas");
         bg_canvas.id = "background-canvas"
         bg_canvas.style.zIndex = scribble.background_canvas.z_index;
-        bg_canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg"
+        bg_canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
         canvas_container.append(bg_canvas);
-    }
-
-    const renderScribble = (scribble) => {
-        renderBackgroundCanvas(scribble);
-        renderCanvases(scribble);
     }
 
     const renderCanvases = (scribble) => {
@@ -37,10 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         //sets canvas attributes
         canvas.dataset.id = cirCan.id
-        console.log("New Canvas with ID: ", cirCan.id)
         canvas.width = canvas_container.offsetWidth
         canvas.height = canvas_container.offsetHeight
-        canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 bg-gray-100 rounded-lg shadow-lg"
+        canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
 
         // sets appropriate layering
         canvas.style.zIndex = cirCan.z_index
@@ -48,21 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // new Circle instance, push to global array
         let circle = new Circle(cirCan.posX, cirCan.posY, cirCan.dx, cirCan.dy, cirCan.radius, cirCan.color, cirCan.sound, context, cirCan.id)
         scribble_shapes.push(circle)
-        console.log("New Circle with ID: ", cirCan.id)
         circle.draw()
 
         //appends to DOM
         canvas_container.append(canvas)
     }
-    
-
-    const getScribble = (scribb_id) => {
-        
-        fetch(SCRIBBLES_URL+scribble_id)
-        .then(response => response.json())
-        .then(scribble => renderScribble(scribble))
-    }
-
 
     const  clickHandler = () => {
 
@@ -71,33 +67,43 @@ document.addEventListener('DOMContentLoaded', () => {
             if(e.target.matches('#unclicked-circle')) {
                 e.target.classList.add('bg-blue-500')
                 e.target.id = 'clicked-circle'
-            
             } else if(e.target.matches('#clicked-circle')) {
                 e.target.id = 'unclicked-circle'
                 e.target.classList.remove('bg-blue-500')
             } else if(e.target.matches('#play-button')) {
-                animateShapes()
+                playAnimation()
                 console.log('play button clicked')
+            } else if(e.target.matches('#pause-button')) {
+                pauseAnimation()
+                console.log('pause button clicked')
             } 
         })
-    }   
+    }
 
-    //callback for requestAnimationFrame(callback)
-    const animateShapes = () => {
-        
-        for(let shape of scribble_shapes) {
-            let canvas = document.querySelector(`[data-id='${shape.id}']`)
-            shape.clear(canvas)
-            shape.nextStep()
-            shape.draw()
-
-            if(shape.posY + shape.dY > canvas.height || shape.posY + shape.dY < 0) {
-                shape.dY = -shape.dY;   
-            } else if (shape.posX + shape.dX > canvas.width || shape.posX + shape.dX < 0) {
-                shape.dX = -shape.dX;   
-            }
+    const pauseAnimation = () => {
+        if (animating) {
+            animating = false
         }
-        window.requestAnimationFrame(animateShapes)
+    }
+
+    const playAnimation = () => {
+        if (!animating) {
+            animating = true;
+            window.requestAnimationFrame(animateShapes)
+        }
+    }
+
+    const animateShapes = () => {
+        if(animating) {
+            for(let shape of scribble_shapes) {
+                let canvas = document.querySelector(`[data-id='${shape.id}']`)
+                shape.clear(canvas)
+                shape.draw()
+                shape.checkBoundaries(canvas)
+                shape.nextStep()
+            }
+            window.requestAnimationFrame(animateShapes)
+        }
     }
 
     //When there is the situation of having the element at a different 
@@ -130,21 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-        // creates blue circle with given x,y positions
-        // const createCircle = (xPosition, yPosition) => {
-
-        //     let scribbleCanvas = document.querySelector('#scribble-board')
-            
-        //     let ctx = scribbleCanvas.getContext('2d')
-     
-        //     //Blue Circle
-        //     ctx.beginPath()
-        //     ctx.fillStyle = '#3182CE'
-        //     ctx.arc(xPosition, yPosition, 15, 0, Math.PI * 2)
-        //     ctx.fill()
-    
-        // }
-
         const createCanvas = (xPosition, yPosition) => {
             let canvasContainer = document.querySelector('.canvases')
             // let scribbleBackground = document.querySelector('#scribble-board')
@@ -155,8 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let ctx = canvas.getContext('2d')
             canvas.style.zIndex = canvasZIndex
 
-            console.log(canvas)
-            console.log(canvasContainer)
 
             ctx.beginPath()
             ctx.fillStyle = '#3182CE'
@@ -172,26 +161,3 @@ document.addEventListener('DOMContentLoaded', () => {
     scribbleHandler()
 
 })
-
-    
-
-    // Red Square (should be a rect? distorted)
-    // ctx.beginPath()
-    // ctx.rect(20, 20, 100, 100)
-    // ctx.fillStyle = "red"
-    // ctx.fill()
-
-    //Green Rectangle
-    // ctx.beginPath()
-    // ctx.rect(20, 20, 250, 100)
-    // ctx.fillStyle = "green"
-    // ctx.fill()
-
- 
-    //Orange Triangle / looks wonky
-    // ctx.moveTo(25, 25);
-    // ctx.lineTo(105, 25);
-    // ctx.lineTo(25, 105);
-    // ctx.fillStyle = "orange"
-    // ctx.fill()
-

@@ -127,10 +127,10 @@ document.addEventListener('DOMContentLoaded', () => {
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement) {
 
-                let rect = canvas.getBoundingClientRect()
+                let rect = lastCanvas.getBoundingClientRect()
 
-                let scaleX = canvas.width / rect.width
-                let scaleY = canvas.height / rect.height
+                let scaleX = lastCanvas.width / rect.width
+                let scaleY = lastCanvas.height / rect.height
 
                 xPosition = (e.clientX - rect.left) * scaleX
                 yPosition = (e.clientY - rect.top) * scaleY
@@ -204,18 +204,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <br>
                 <label>radius</label><br>
-                <input type="number" name="radius" value="radius">
+                <input type="number" name="radius" value="10">
                 <br>
                 <br>
                 <label >Speed</label><br>
-                <input type="number" name="dx" value="dx">
+                <input type="number" name="dx" value="10">
                 <label>dx</label>
-                <input type="number" name="dy" value="dy">
+                <input type="number" name="dy" value="6">
                 <label>dy</label>
                 <br>
                 <br>
                 <input type="submit" value="Click + press on scribble to place!" >
             `
+
             body.insertAdjacentElement('beforeend', elementForm)
                
     }
@@ -254,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         console.log(shapeInfo)      
     }
-    
+
 
     getScribble(scribble_id)
     clickHandler()

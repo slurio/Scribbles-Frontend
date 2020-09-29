@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let bg_canvas = document.createElement("canvas");
         bg_canvas.id = "background-canvas"
         bg_canvas.style.zIndex = scribble.background_canvas.z_index;
+        bg_canvas.style.background = scribble.background_canvas.background_style
         bg_canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
         canvas_container.append(bg_canvas);
     }

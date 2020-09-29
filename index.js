@@ -113,32 +113,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const scribbleHandler = () => {
         
         document.addEventListener('click', e => {
-            const circleElement = document.querySelector('#clicked-circle')
+            const clickedCircle = document.querySelector('#clicked-circle')
+            const unclickedCircle = document.querySelector('#unclicked-circle')
+
+            if (e.target.matches("#clicked-circle")) {
+                console.log("unclicked circle CLICKED")
+            }
 
             //click listner for scribble canvas to get mouse x/y position
             // if(e.target.matches('#scribble-board') && circleElement) {
-            if(e.target.tagName.toLowerCase() === 'canvas') {   
+            // if(e.target.tagName.toLowerCase() === 'canvas') {  
                 
-                let canvas = e.target
+            //     let canvas = e.target
 
-                let rect = canvas.getBoundingClientRect()
+            //     let rect = canvas.getBoundingClientRect()
 
-                let scaleX = canvas.width / rect.width
-                let scaleY = canvas.height / rect.height
+            //     let scaleX = canvas.width / rect.width
+            //     let scaleY = canvas.height / rect.height
 
-                xPosition = (e.clientX - rect.left) * scaleX
-                yPosition = (e.clientY - rect.top) * scaleY
+            //     xPosition = (e.clientX - rect.left) * scaleX
+            //     yPosition = (e.clientY - rect.top) * scaleY
 
-                //creates circle with mouse x,y position on click                
-                // createCircle(xPosition, yPosition)
-                createCanvas(xPosition, yPosition)
-            }
+            //     //creates circle with mouse x,y position on click                
+            //     // createCircle(xPosition, yPosition)
+            //     createCanvas(xPosition, yPosition)
+            // }
         })
     }
 
         const createCanvas = (xPosition, yPosition) => {
             let canvasContainer = document.querySelector('.canvases')
-            // let scribbleBackground = document.querySelector('#scribble-board')
             let canvasZIndex = parseInt(canvasContainer.lastElementChild.style.zIndex) + 1
             let canvas = document.createElement('canvas')
             canvas.width = canvasContainer.offsetWidth

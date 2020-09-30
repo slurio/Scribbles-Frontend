@@ -319,49 +319,34 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(updatedCircleCanvas => {
             scribbleId = document.querySelector('.canvases').dataset.scribble_id
-            clearCanvases()
-            getScribble(scribbleId)
+            // clearCanvases()
+            //cant do below since we are not saving to database when moving
+            // getScribble(scribbleId)
             // document.querySelector(`[data-id='${updatedCircleCanvas.id}']`).remove()
 
 
             //get scribble id and render it
-            // renderCircleCanvasUpdate(updatedCircleCanvas)
+            renderCircleCanvasUpdate(updatedCircleCanvas)
         })
         
     }
 
-    // const renderCircleCanvasUpdate = updatedCircleCanvas => {
+    const renderCircleCanvasUpdate = updatedCircleCanvas => {
     //      //edit scribble shape array and DOM
-    //      let updateScribbleShapes = []
+         let updateScribbleShapes = []
+        console.log(scribble_shapes)
+         for(shape of scribble_shapes) {
+            if(shape.id !== updatedCircleCanvas.id) {
+                updateScribbleShapes.push(shape)
+            }
+        }
 
-    //      for(shape of scribble_shapes) {
-    //         if(shape.id !== updatedCircleCanvas.id) {
-    //             updateScribbleShapes.push(shape)
-    //         }
-    //     }
+        document.querySelector(`[data-id='${updatedCircleCanvas.id}']`).remove()
+        scribble_shapes = updateScribbleShapes
+        console.log(scribble_shapes)
+        renderCircle(updatedCircleCanvas)
 
-    //     scribble_shapes = updateScribbleShapes
-    //     console.log(scribble_shapes)
-    //     renderCircle(updatedCircleCanvas)
-
-    //      console.log(updatedCircleCanvas)
-    //     // for(shape of scribble_shapes) {
-    //     //     if(shape.id === updatedCircleCanvas.id) {
-    //     //         shape = {
-    //     //             color: updatedCircleCanvas.color,
-    //     //             context:updatedCircleCanvas.color,
-    //     //             dx:,
-    //     //             dy:,
-    //     //             id:,
-    //     //             posX:,
-    //     //             posY:,
-    //     //             radius:,
-    //     //             sound:
-    //     //         }
-    //     //         console.log('me!')
-    //     //     }
-    //     // }
-    // }
+    }
 
     //gets form values for circle
     const getElementFormInfo = target => {

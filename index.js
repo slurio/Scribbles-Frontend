@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const  clickHandler = () => {
 
         document.addEventListener('click', e => {
-
+            console.log(e.target)
             if(e.target.matches('#unclicked-circle')) {
                 e.target.classList.add('bg-blue-500')
                 e.target.id = 'clicked-circle'
@@ -333,22 +333,52 @@ document.addEventListener('DOMContentLoaded', () => {
         
     }
 
-    const renderCircleCanvasUpdate = updatedCircleCanvas => {
+    const renderCircleCanvasUpdate = updatedCircle => {
     //      //edit scribble shape array and DOM
          let updateScribbleShapes = []
-        console.log(scribble_shapes)
+        console.log('old shape array', scribble_shapes)
          for(shape of scribble_shapes) {
-            if(shape.id !== updatedCircleCanvas.id) {
+            if(shape.id !== updatedCircle.id) {
                 updateScribbleShapes.push(shape)
             }
         }
 
-        document.querySelector(`[data-id='${updatedCircleCanvas.id}']`).remove()
         scribble_shapes = updateScribbleShapes
-        console.log(scribble_shapes)
-        renderCircle(updatedCircleCanvas)
+        console.log('removed old circle array', scribble_shapes)
+
+        let canvas_container = document.querySelector(".canvases");
+        let canvas = document.createElement("canvas")
+        let context = canvas.getContext('2d')
+        
+        //sets canvas attributes
+        canvas.dataset.id = updatedCircle.id
+        canvas.width = canvas_container.offsetWidth
+        canvas.height = canvas_container.offsetHeight
+        canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
+
+        // sets appropriate layering
+        canvas.style.zIndex = updatedCircle.z_index
+
+        // new Circle instance, push to global array
+        let circle = new Circle(updatedCircle.posX, updatedCircle.posY, updatedCircle.dx, updatedCircle.dy, updatedCircle.radius, updatedCircle.color, updatedCircle.sound, context, updatedCircle.id)
+        scribble_shapes.push(circle)
+        circle.draw()
+        console.log('old canvases', document.querySelector('.canvases'))
+        //appends to DOM
+        let oldCircle = document.querySelector(`[data-id='${updatedCircle.id}']`)
+        oldCircle.insertAdjacentElement('afterend', canvas)
+        oldCircle.remove()
+        console.log('updated canvases', document.querySelector('.canvases'))
+        console.log('old canvas removed', oldCircle)
+        console.log('updated circle added', updatedCircle)
+        // document.querySelector(`[data-id='${updatedCircleCanvas.id}']`).remove()
+        // scribble_shapes = updateScribbleShapes
+
+        //can't append to other shapes
+        // renderCircle(updatedCircleCanvas)
 
     }
+
 
     //gets form values for circle
     const getElementFormInfo = target => {

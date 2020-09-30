@@ -132,6 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             //to get the last canvas in div canvases
             const lastCanvas = document.querySelector('.canvases').lastElementChild
+
+            const canvasDiv= document.querySelector('.canvases')
             
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement) {
@@ -176,9 +178,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch(CIRCLES_URL, fetchOptions)
                 .then(response => response.json())
                 .then(circleCanvas => renderCircle(circleCanvas))
-               
+            
+            //To edit element shape    
+            }else if(e.target === lastCanvas) {
+            // }else if(e.target === canvasDiv) {
+            ///When user clicks on canvas or should we have an edit button ??
+                console.log('click')
+                let rect = lastCanvas.getBoundingClientRect()
+
+                let scaleX = lastCanvas.width / rect.width
+                let scaleY = lastCanvas.height / rect.height
+
+                xPosition = (e.clientX - rect.left) * scaleX
+                yPosition = (e.clientY - rect.top) * scaleY
+
+                checkElementPresent(xPosition, yPosition)
             }
         })
+    }
+
+    const checkElementPresent = (xPos, yPos) => {
+        // console.log(scribble_shapes)
+        // console.log('x pos', xPos, 'y pos', yPos)
+
+        //get mouse placement using x and y coordinates and check to see against stored shape array if it matches with one
+        //if yes have menu pop up to edit element
+        //save and update information to DOM and DB
+
+        for(shape of scribble_shapes) {
+            let context = shape.context
+
+            if(context.isPointInPath(xPos, yPos)) {
+                renderEditElementForm(shape)
+            }
+        }
+    }
+
+    const renderEditElementForm = shape => {
+        // editElementForm = document.createElement('form')
+        // elementForm.id = 'edit-element-form'
+        // elementForm.className = 'bg-gray-400'
+       
+        let circleId = shape.id
+        let editElementForm = document.querySelector('.edit-element-form')
+        editElementForm.dataset.circle_id = circleId
+        toggleEditModal()
+
+    }
+
+    const toggleEditModal = () => {
+        let editModal = document.querySelector('.edit-element-modal')
+        editModal.classList.toggle('show-edit-modal')
     }
 
     const renderForm = target => {
@@ -225,9 +275,93 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault()
             if(e.target.matches('#element-form')) {
                 getElementFormInfo(e.target)
+            } else if(e.target.matches('.edit-element-form')) {
+                console.log('submit')
+                //edit scribble shape array and database and DOM
+                updateElementShape(e.target)
+                toggleEditModal()
             }
         })
     }
+
+    const updateElementShape = target => {
+        //get info off of form
+        // const shape = target.dataset.shape
+        const color = target.color.value
+        const dx = target.dx.value
+        const dy = target.dy.value
+        const radius = target.radius.value
+        const sound = target.sound.value
+
+        const circleId = target.dataset.circle_id
+        console.log(circleId)
+
+        shapeInfo = {
+            // shape: shape,
+            color: color,
+            dx: dx,
+            dy: dy,
+            radius: radius,
+            sound: sound
+        }
+
+        //Patch request to update circleCanvas
+        let fetchOptions = {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accepts": "application/json"
+            },
+            body: JSON.stringify(shapeInfo)
+        }
+
+        fetch(CIRCLES_URL + circleId, fetchOptions)
+        .then(response => response.json())
+        .then(updatedCircleCanvas => {
+            scribbleId = document.querySelector('.canvases').dataset.scribble_id
+            clearCanvases()
+            getScribble(scribbleId)
+            // document.querySelector(`[data-id='${updatedCircleCanvas.id}']`).remove()
+
+
+            //get scribble id and render it
+            // renderCircleCanvasUpdate(updatedCircleCanvas)
+        })
+        
+    }
+
+    // const renderCircleCanvasUpdate = updatedCircleCanvas => {
+    //      //edit scribble shape array and DOM
+    //      let updateScribbleShapes = []
+
+    //      for(shape of scribble_shapes) {
+    //         if(shape.id !== updatedCircleCanvas.id) {
+    //             updateScribbleShapes.push(shape)
+    //         }
+    //     }
+
+    //     scribble_shapes = updateScribbleShapes
+    //     console.log(scribble_shapes)
+    //     renderCircle(updatedCircleCanvas)
+
+    //      console.log(updatedCircleCanvas)
+    //     // for(shape of scribble_shapes) {
+    //     //     if(shape.id === updatedCircleCanvas.id) {
+    //     //         shape = {
+    //     //             color: updatedCircleCanvas.color,
+    //     //             context:updatedCircleCanvas.color,
+    //     //             dx:,
+    //     //             dy:,
+    //     //             id:,
+    //     //             posX:,
+    //     //             posY:,
+    //     //             radius:,
+    //     //             sound:
+    //     //         }
+    //     //         console.log('me!')
+    //     //     }
+    //     // }
+    // }
 
     //gets form values for circle
     const getElementFormInfo = target => {
@@ -375,19 +509,4 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 
-// const addDropDownListener = () => {
-//     let dropDown = document.getElementById("breed-dropdown");
-//     dropDown.addEventListener("change", (e) => {
-//         let option = e.target.value;
-//         let sortedBreeds = sortBreeds(option);
-//         let breedUl = document.getElementById("dog-breeds");
-//         breedUl.innerHTML = "";
-//         sortedBreeds.forEach(breed => renderBreed(breed));
-//     });
-// };
 
-{/* <select id="breed-dropdown" name="select-breed">
-<option value="a">a</option>
-<option value="b">b</option>
-<option value="c">c</option>
-<option value="d">d</option> */}

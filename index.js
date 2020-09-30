@@ -128,13 +128,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         document.addEventListener('click', e => {
             //check to see if circle was clicked
-            const circleElement = document.querySelector('#unclicked-circle')
+            const circleElement = document.querySelector('#clicked-circle')
             //to get the last canvas in div canvases
             const lastCanvas = document.querySelector('.canvases').lastElementChild
             
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement && shapeInfo) {
-
+                circleElement.id = 'unclicked-circle'
+                circleElement.classList.remove('bg-blue-500')
 
                 let z_index = parseInt(lastCanvas.style.zIndex) + 1
 
@@ -220,8 +221,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const renderForm = target => {
-          
-        //render a pop up menu with options for velocity/color/sound/etc after cicle is clicked in element menu
+        const form = document.querySelector('#element-form')
+        if(!form){
+            //render a pop up menu with options for velocity/color/sound/etc after cicle is clicked in element menu
 
             const body = document.querySelector('body')
             elementForm = document.createElement('form')
@@ -235,18 +237,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <br>
                 <label> Sound </label>
-                <input type="radio" name="sound" placeholder="c">
+                <input type="radio" name="sound" value="c">
                 <label>test</label>
                 <br>
                 <br>
                 <label>radius</label><br>
-                <input type="number" name="radius" placeholder="10">
+                <input type="number" name="radius" value="10">
                 <br>
                 <br>
                 <label >Speed</label><br>
-                <input type="number" name="dx" placeholder="10">
+                <input type="number" name="dx" value="10">
                 <label>dx</label>
-                <input type="number" name="dy" placeholder="6">
+                <input type="number" name="dy" value="6">
                 <label>dy</label>
                 <br>
                 <br>
@@ -254,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `
 
             body.insertAdjacentElement('beforeend', elementForm)
+        }        
                
     }
 
@@ -262,9 +265,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('submit', e => {
             e.preventDefault()
             if(e.target.matches('#element-form')) {
-                const circleElement = document.querySelector('#clicked-circle')
-                circleElement.id = 'unclicked-circle'
-                circleElement.classList.remove('bg-blue-500')
+                // const circleElement = document.querySelector('#clicked-circle')
+                // circleElement.id = 'unclicked-circle'
+                // circleElement.classList.remove('bg-blue-500')
                 getElementFormInfo(e.target)
             } else if(e.target.matches('.edit-element-form')) {
                 updateElementShape(e.target)
@@ -282,6 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sound = target.sound.value
 
         const circleId = target.dataset.circle_id
+        target.reset()
 
         shapeInfo = {
             // shape: shape,

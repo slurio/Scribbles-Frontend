@@ -100,8 +100,66 @@ document.addEventListener('DOMContentLoaded', () => {
                 toggleEditModal()
             }else if(e.target.matches('.close-bg-edit-button')) {
                 toggleEditBgModal()
+            }else if(e.target.matches('.delete-shape')){
+                deleteShape(e.target)
             }
         })
+    }
+
+    const deleteShape = target => {
+
+        let circleId = document.querySelector('.edit-element-form').dataset.circle_id
+        toggleEditModal()
+        //put id on edit shape form 
+        //pull that for fetch to delete and update DB
+        //render on DOM and update scribble_shape array
+        
+        let options = {
+            method: "DELETE"
+        }
+
+        fetch(CIRCLES_URL + circleId, options)
+        .then(response => response.json())
+        .then(deletedCircle => updateCanvas(deletedCircle))
+    }
+
+    const updateCanvas = deletedCircle => {
+        console.log(deletedCircle)
+
+        ///edit scribble shape array and DOM
+        let updateScribbleShapes = []   
+
+        for(shape of scribble_shapes) {
+            if(shape.id !== deletedCircle.id) {
+                updateScribbleShapes.push(shape)
+            }
+        }
+
+        scribble_shapes = updateScribbleShapes
+
+        // let canvas_container = document.querySelector(".canvases");
+        // let canvas = document.createElement("canvas")
+        // let context = canvas.getContext('2d')
+        
+        // //sets canvas attributes
+        // canvas.dataset.id = updatedCircle.id
+        // canvas.width = canvas_container.offsetWidth
+        // canvas.height = canvas_container.offsetHeight
+        // canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
+
+        // // sets appropriate layering
+        // canvas.style.zIndex = updatedCircle.z_index
+
+        // // new Circle instance, push to global array
+        // let circle = new Circle(updatedCircle.posX, updatedCircle.posY, updatedCircle.dx, updatedCircle.dy, updatedCircle.radius, updatedCircle.color, updatedCircle.sound, context, updatedCircle.id)
+        // scribble_shapes.push(circle)
+        // circle.draw()
+        
+        //appends to DOM
+        let oldCircle = document.querySelector(`[data-id='${deletedCircle.id}']`)
+        // oldCircle.insertAdjacentElement('afterend', canvas)
+        oldCircle.remove()
+
     }
 
     const pauseAnimation = () => {

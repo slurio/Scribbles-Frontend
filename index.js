@@ -213,6 +213,14 @@ document.addEventListener('DOMContentLoaded', () => {
        
         let editElementForm = document.querySelector('.edit-element-form')
         editElementForm.dataset.circle_id = shape.id
+        
+        //populate current shape attributes in edit form
+        editElementForm.color.value = shape.color
+        editElementForm.sound.value = shape.sound
+        editElementForm.radius.value = shape.radius
+        editElementForm.dx.value = shape.dX
+        editElementForm.dy.value = shape.dY
+
         toggleEditModal()
 
     }

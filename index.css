@@ -69,7 +69,15 @@ canvas {
     border-radius: 0.5rem;
 }
 
-/* .close-button {
+.modal-content h1{
+    text-align: center;
+}
+
+.align-button {
+    text-align: center;
+}
+
+.close-button {
     float: right;
     width: 1.5rem;
     line-height: 1.5rem;
@@ -81,7 +89,7 @@ canvas {
 
 .close-button:hover {
     background-color: darkgray;
-} */
+}
 
 .show-modal {
     opacity: 1;

@@ -90,6 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('#log-out')) {
                 clearCanvases()
                 toggleLogInModal()
+            }else if(e.target.matches('.close-button')) {
+                toggleEditModal()
             }
         })
     }

@@ -92,6 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (e.target.matches('#delete-scribble')) {
                 console.log("DELETE BUTTON PRESSED")
             }else if(e.target.matches('.close-edit-button')) {
+                const form = document.querySelector('.edit-element-form')
+                form.reset()
                 toggleEditModal()
             }
         })
@@ -277,7 +279,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const updateElementShape = target => {
-
         const color = target.color.value
         const dx = target.dx.value
         const dy = target.dy.value

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUserId;
     let animating = false;
     let shapeInfo;
+    let backgroundColor
 
     const SCRIBBLES_URL = "http://localhost:3000/scribbles/"
     const CIRCLES_URL = "http://localhost:3000/circle_canvases/"
@@ -31,10 +32,12 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas_container.dataset.scribble_id = scribble.id
         let bg_canvas = document.createElement("canvas");
         bg_canvas.id = "background-canvas"
+        bg_canvas.dataset.bg_id =scribble.background_canvas.id
         bg_canvas.style.zIndex = scribble.background_canvas.z_index;
         bg_canvas.style.background = scribble.background_canvas.background_style
         bg_canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
         canvas_container.append(bg_canvas);
+        backgroundColor = scribble.background_canvas.background_style
     }
 
     const renderCanvases = (scribble) => {
@@ -95,6 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const form = document.querySelector('.edit-element-form')
                 form.reset()
                 toggleEditModal()
+            }else if(e.target.matches('.close-bg-edit-button')) {
+                toggleEditBgModal()
             }
         })
     }
@@ -179,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
                 shapeInfo = {}
             //To edit element shape    
-            }else if(e.target === lastCanvas) {
+            }else if(e.target === lastCanvas && !circleElement) {
                   //get x/y of mouse click
                 let rect = lastCanvas.getBoundingClientRect()
                 let scaleX = lastCanvas.width / rect.width
@@ -196,19 +201,38 @@ document.addEventListener('DOMContentLoaded', () => {
     //check to see against stored shape array if shape is present on mouse click
     //if shape present render form
     const checkElementPresent = (xPos, yPos) => {
+        let checkShapClicked = []
 
         for(shape of scribble_shapes) {
             let context = shape.context
 
             if(context.isPointInPath(xPos, yPos)) {
                 renderEditElementForm(shape)
+                //update global var
                 editXPos = xPos
                 editYPos = yPos
-            }
+
+                checkShapClicked.push(shape)
+            } 
         }
+
+        if(checkShapClicked.length === 0) {
+            let bgEditForm = document.querySelector('.edit-bg-form')
+
+            // let currentBgColor =  document.querySelector('#background-canvas').style.background
+            
+            bgEditForm.color.value = backgroundColor
+            toggleEditBgModal()
+        }
+
     }
 
-  
+    const toggleEditBgModal = () => {
+        let bgModal = document.querySelector('.edit-bg-modal')
+       
+        bgModal.classList.toggle('show-edit-bg-modal')
+    }
+
     const renderEditElementForm = shape => {
        
         let editElementForm = document.querySelector('.edit-element-form')
@@ -282,8 +306,45 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('.edit-element-form')) {
                 updateElementShape(e.target)
                 toggleEditModal()
+            } else if(e.target.matches('.edit-bg-form')) {
+                toggleEditBgModal()
+                saveBackground(e.target)
             }
         })
+    }
+
+    const saveBackground = target => {
+        const originalBg = document.querySelector('#background-canvas')
+        const newBackground_style = target.color.value
+        const background_id = originalBg.dataset.bg_id
+        
+        let fetchOptions = {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accepts": "application/json"
+            },
+            body: JSON.stringify({
+                background_style: newBackground_style
+            })
+        }
+
+        fetch(BG_URL + background_id, fetchOptions)
+        .then(response => response.json())
+        .then(updatedBg => renderNewBg(updatedBg))
+    }
+
+    const renderNewBg = updatedBg => {
+        document.querySelector('#background-canvas').remove()
+
+        let canvas_container = document.querySelector(".canvases");
+        let bg_canvas = document.createElement("canvas");
+        bg_canvas.id = "background-canvas"
+        bg_canvas.dataset.bg_id =updatedBg.id
+        bg_canvas.style.zIndex = updatedBg.z_index;
+        bg_canvas.style.background = updatedBg.background_style
+        bg_canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
+        canvas_container.prepend(bg_canvas);
     }
 
     const updateElementShape = target => {
@@ -330,7 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderCircleCanvasUpdate = updatedCircle => {
         ///edit scribble shape array and DOM
-        let updateScribbleShapes = []
+        let updateScribbleShapes = []   
+  
         for(shape of scribble_shapes) {
             if(shape.id !== updatedCircle.id) {
                 updateScribbleShapes.push(shape)

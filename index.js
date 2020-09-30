@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas_container.append(canvas)
     }
 
-    const  clickHandler = () => {
+    const clickHandler = () => {
 
         document.addEventListener('click', e => {
 
@@ -88,6 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('#log-out')) {
                 clearCanvases()
                 toggleLogInModal()
+            } else if (e.target.matches('#delete-scribble')) {
+                console.log("DELETE BUTTON PRESSED")
             }
         })
     }

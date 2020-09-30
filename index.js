@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bg_canvas.id = "background-canvas"
         bg_canvas.style.zIndex = scribble.background_canvas.z_index;
         bg_canvas.style.background = scribble.background_canvas.background_style
-        bg_canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
+        bg_canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
         canvas_container.append(bg_canvas);
     }
 
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.dataset.id = cirCan.id
         canvas.width = canvas_container.offsetWidth
         canvas.height = canvas_container.offsetHeight
-        canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
+        canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
 
         // sets appropriate layering
         canvas.style.zIndex = cirCan.z_index
@@ -240,11 +240,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const body = document.querySelector('body')
             elementForm = document.createElement('form')
             elementForm.id = 'element-form'
-            elementForm.className = 'bg-gray-400'
+            elementForm.className = 'bg-gray-400 p-4 m-2' 
             elementForm.dataset.shape = 'circle'
             
             elementForm.innerHTML = `
-                <label >COLOR</label><br>
+                <label class="">Color</label><br>
                 <input type="color" name="color" value="color">
                 <br>
                 <br>

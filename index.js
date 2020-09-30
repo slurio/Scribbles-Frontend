@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 toggleLogInModal()
             } else if (e.target.matches('#delete-scribble')) {
                 console.log("DELETE BUTTON PRESSED")
+                deleteScribbleFromDB();
             }else if(e.target.matches('.close-edit-button')) {
                 toggleEditModal()
             }
@@ -350,7 +351,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
-
     //gets form values for circle
     const getElementFormInfo = target => {
         //sound not created in form yet
@@ -435,7 +435,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(bgCanvas => getScribble(bgCanvas.scribble.id))
     }
 
-
     const addLogInListener = () => {
         let userForm = document.querySelector(".login-form")
         userForm.addEventListener("submit", (e) => {
@@ -510,6 +509,34 @@ document.addEventListener('DOMContentLoaded', () => {
             let scribbleId = e.target.value
             getScribble(scribbleId)
         })
+    }
+
+    const deleteScribbleFromDB = () => {
+        let dropDown = document.getElementById("scribble-select-menu")
+        let optionToDelete = dropDown.options[dropDown.options.selectedIndex]
+        let scribId = optionToDelete.value
+        fetch(SCRIBBLES_URL+scribId, {method: "DELETE"})
+        .then(response => response.json())
+        .then(scribble => {
+            console.log(scribble);
+            deleteScribbleFromDOM();
+            renderAvailableScribble();
+        })
+    }
+
+    const deleteScribbleFromDOM = () => {
+        let dropDown = document.getElementById("scribble-select-menu")
+        let optionToDelete = dropDown.options[dropDown.options.selectedIndex]
+        dropDown.removeChild(optionToDelete)
+    }
+
+    const renderAvailableScribble = () => {
+        let firstRemainingOption = document.getElementById("scribble-select-menu").options[0]
+        if (firstRemainingOption) {
+            getScribble(firstRemainingOption.value)
+        } else {
+            newScribble()
+        }
     }
 
     addDropDownListener();

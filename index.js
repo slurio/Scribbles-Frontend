@@ -131,13 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             //to get the last canvas in div canvases
             const lastCanvas = document.querySelector('.canvases').lastElementChild
             
-            //get x/y of mouse click
-            let rect = lastCanvas.getBoundingClientRect()
-            let scaleX = lastCanvas.width / rect.width
-            let scaleY = lastCanvas.height / rect.height
-
-            xPosition = (e.clientX - rect.left) * scaleX
-            yPosition = (e.clientY - rect.top) * scaleY
+        
 
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement) {
@@ -146,6 +140,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let z_index = parseInt(lastCanvas.style.zIndex) + 1
 
+                  //get x/y of mouse click
+                let rect = lastCanvas.getBoundingClientRect()
+                let scaleX = lastCanvas.width / rect.width
+                let scaleY = lastCanvas.height / rect.height
+
+                xPosition = (e.clientX - rect.left) * scaleX
+                yPosition = (e.clientY - rect.top) * scaleY
                 
                 let canvas_container = document.querySelector(".canvases");
 
@@ -176,6 +177,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             //To edit element shape    
             }else if(e.target === lastCanvas) {
+                  //get x/y of mouse click
+                let rect = lastCanvas.getBoundingClientRect()
+                let scaleX = lastCanvas.width / rect.width
+                let scaleY = lastCanvas.height / rect.height
+
+                xPosition = (e.clientX - rect.left) * scaleX
+                yPosition = (e.clientY - rect.top) * scaleY
 
                 checkElementPresent(xPosition, yPosition)
             }

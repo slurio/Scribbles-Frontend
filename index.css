@@ -77,7 +77,7 @@ canvas {
     text-align: center;
 }
 
-.close-button {
+/* .close-button {
     float: right;
     width: 1.5rem;
     line-height: 1.5rem;
@@ -89,7 +89,7 @@ canvas {
 
 .close-button:hover {
     background-color: darkgray;
-}
+} */
 
 .show-modal {
     opacity: 1;
@@ -123,7 +123,7 @@ canvas {
     border-radius: 0.5rem;
 }
 
-/* .close-button {
+.close-edit-button {
     float: right;
     width: 1.5rem;
     line-height: 1.5rem;
@@ -131,11 +131,11 @@ canvas {
     cursor: pointer;
     border-radius: 0.25rem;
     background-color: lightgray;
-} */
-/* 
-.close-button:hover {
+} 
+ 
+.close--edit-button:hover {
     background-color: darkgray;
-} */
+}
 
 .show-edit-modal {
     opacity: 1;

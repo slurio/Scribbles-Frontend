@@ -2,7 +2,8 @@ let scribble_shapes = []
 
 document.addEventListener('DOMContentLoaded', () => {
     
-
+    let editXPos 
+    let editYPos 
     let currentUserId;
     let animating = false;
     //for passing information to create a new shape
@@ -72,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const  clickHandler = () => {
 
         document.addEventListener('click', e => {
-            console.log(e.target)
             if(e.target.matches('#unclicked-circle')) {
                 e.target.classList.add('bg-blue-500')
                 e.target.id = 'clicked-circle'
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('#log-out')) {
                 clearCanvases()
                 toggleLogInModal()
-            }else if(e.target.matches('.close-button')) {
+            }else if(e.target.matches('.close-edit-button')) {
                 toggleEditModal()
             }
         })
@@ -122,34 +122,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    //When there is the situation of having the element at a different 
-    //size than the bitmap itself, for example, the element is scaled 
-    //using CSS or there is pixel-aspect ratio etc. you will have to address this.
-    //for adding a shape to scribble
+
     const scribbleHandler = () => {
         
         document.addEventListener('click', e => {
             //check to see if circle was clicked
             const circleElement = document.querySelector('#clicked-circle')
-            
             //to get the last canvas in div canvases
             const lastCanvas = document.querySelector('.canvases').lastElementChild
-
-            const canvasDiv= document.querySelector('.canvases')
             
+            //get x/y of mouse click
+            let rect = lastCanvas.getBoundingClientRect()
+            let scaleX = lastCanvas.width / rect.width
+            let scaleY = lastCanvas.height / rect.height
+
+            xPosition = (e.clientX - rect.left) * scaleX
+            yPosition = (e.clientY - rect.top) * scaleY
+
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement) {
-                const circleUserBar = document.querySelector('#clicked-circle')
-                circleUserBar.id = 'unclicked-circle'
-                circleUserBar.classList.remove('bg-blue-500')
-                
-                let rect = lastCanvas.getBoundingClientRect()
-
-                let scaleX = lastCanvas.width / rect.width
-                let scaleY = lastCanvas.height / rect.height
-
-                xPosition = (e.clientX - rect.left) * scaleX
-                yPosition = (e.clientY - rect.top) * scaleY
+                circleElement.id = 'unclicked-circle'
+                circleElement.classList.remove('bg-blue-500')
 
                 let z_index = parseInt(lastCanvas.style.zIndex) + 1
 
@@ -183,47 +176,32 @@ document.addEventListener('DOMContentLoaded', () => {
             
             //To edit element shape    
             }else if(e.target === lastCanvas) {
-            // }else if(e.target === canvasDiv) {
-            ///When user clicks on canvas or should we have an edit button ??
-                console.log('click')
-                let rect = lastCanvas.getBoundingClientRect()
-
-                let scaleX = lastCanvas.width / rect.width
-                let scaleY = lastCanvas.height / rect.height
-
-                xPosition = (e.clientX - rect.left) * scaleX
-                yPosition = (e.clientY - rect.top) * scaleY
 
                 checkElementPresent(xPosition, yPosition)
             }
         })
     }
 
+    //check to see against stored shape array if shape is present on mouse click
+    //if shape present render form
     const checkElementPresent = (xPos, yPos) => {
-        // console.log(scribble_shapes)
-        // console.log('x pos', xPos, 'y pos', yPos)
-
-        //get mouse placement using x and y coordinates and check to see against stored shape array if it matches with one
-        //if yes have menu pop up to edit element
-        //save and update information to DOM and DB
 
         for(shape of scribble_shapes) {
             let context = shape.context
 
             if(context.isPointInPath(xPos, yPos)) {
                 renderEditElementForm(shape)
+                editXPos = xPos
+                editYPos = yPos
             }
         }
     }
 
+  
     const renderEditElementForm = shape => {
-        // editElementForm = document.createElement('form')
-        // elementForm.id = 'edit-element-form'
-        // elementForm.className = 'bg-gray-400'
        
-        let circleId = shape.id
         let editElementForm = document.querySelector('.edit-element-form')
-        editElementForm.dataset.circle_id = circleId
+        editElementForm.dataset.circle_id = shape.id
         toggleEditModal()
 
     }
@@ -278,8 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if(e.target.matches('#element-form')) {
                 getElementFormInfo(e.target)
             } else if(e.target.matches('.edit-element-form')) {
-                console.log('submit')
-                //edit scribble shape array and database and DOM
                 updateElementShape(e.target)
                 toggleEditModal()
             }
@@ -287,8 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const updateElementShape = target => {
-        //get info off of form
-        // const shape = target.dataset.shape
+
         const color = target.color.value
         const dx = target.dx.value
         const dy = target.dy.value
@@ -296,15 +271,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const sound = target.sound.value
 
         const circleId = target.dataset.circle_id
-        console.log(circleId)
 
         shapeInfo = {
             // shape: shape,
+            posX: editXPos,
+            posY: editYPos,
             color: color,
             dx: dx,
             dy: dy,
             radius: radius,
-            sound: sound
+            sound: sound,
         }
 
         //Patch request to update circleCanvas
@@ -320,11 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(CIRCLES_URL + circleId, fetchOptions)
         .then(response => response.json())
         .then(updatedCircleCanvas => {
-            scribbleId = document.querySelector('.canvases').dataset.scribble_id
-            // clearCanvases()
-            //cant do below since we are not saving to database when moving
-            // getScribble(scribbleId)
-            // document.querySelector(`[data-id='${updatedCircleCanvas.id}']`).remove()
 
 
             //get scribble id and render it
@@ -334,17 +305,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const renderCircleCanvasUpdate = updatedCircle => {
-    //      //edit scribble shape array and DOM
-         let updateScribbleShapes = []
-        console.log('old shape array', scribble_shapes)
-         for(shape of scribble_shapes) {
+        ///edit scribble shape array and DOM
+        let updateScribbleShapes = []
+        for(shape of scribble_shapes) {
             if(shape.id !== updatedCircle.id) {
                 updateScribbleShapes.push(shape)
             }
         }
 
         scribble_shapes = updateScribbleShapes
-        console.log('removed old circle array', scribble_shapes)
 
         let canvas_container = document.querySelector(".canvases");
         let canvas = document.createElement("canvas")
@@ -363,19 +332,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let circle = new Circle(updatedCircle.posX, updatedCircle.posY, updatedCircle.dx, updatedCircle.dy, updatedCircle.radius, updatedCircle.color, updatedCircle.sound, context, updatedCircle.id)
         scribble_shapes.push(circle)
         circle.draw()
-        console.log('old canvases', document.querySelector('.canvases'))
+        
         //appends to DOM
         let oldCircle = document.querySelector(`[data-id='${updatedCircle.id}']`)
         oldCircle.insertAdjacentElement('afterend', canvas)
         oldCircle.remove()
-        console.log('updated canvases', document.querySelector('.canvases'))
-        console.log('old canvas removed', oldCircle)
-        console.log('updated circle added', updatedCircle)
-        // document.querySelector(`[data-id='${updatedCircleCanvas.id}']`).remove()
-        // scribble_shapes = updateScribbleShapes
-
-        //can't append to other shapes
-        // renderCircle(updatedCircleCanvas)
 
     }
 

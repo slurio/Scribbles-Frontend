@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     
     let scribble_shapes = []
+    let editXPos 
+    let editYPos 
     let currentUserId;
     let animating = false;
     let shapeInfo;
@@ -31,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bg_canvas.id = "background-canvas"
         bg_canvas.style.zIndex = scribble.background_canvas.z_index;
         bg_canvas.style.background = scribble.background_canvas.background_style
-        bg_canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
+        bg_canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
         canvas_container.append(bg_canvas);
     }
 
@@ -54,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.dataset.id = cirCan.id
         canvas.width = canvas_container.offsetWidth
         canvas.height = canvas_container.offsetHeight
-        canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
+        canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
 
         // sets appropriate layering
         canvas.style.zIndex = cirCan.z_index
@@ -71,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const clickHandler = () => {
 
         document.addEventListener('click', e => {
-
             if(e.target.matches('#unclicked-circle')) {
                 e.target.classList.add('bg-blue-500')
                 e.target.id = 'clicked-circle'
@@ -79,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('#clicked-circle')) {
                 e.target.id = 'unclicked-circle'
                 e.target.classList.remove('bg-blue-500')
+                document.querySelector('#element-form').remove()
             } else if(e.target.matches('#play-button') || e.target.matches('.play-graphic')) {
                 playAnimation()
             } else if(e.target.matches('#pause-button') || e.target.matches('.pause-graphic')) {
@@ -90,6 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 toggleLogInModal()
             } else if (e.target.matches('#delete-scribble')) {
                 console.log("DELETE BUTTON PRESSED")
+            }else if(e.target.matches('.close-edit-button')) {
+                toggleEditModal()
             }
         })
     }
@@ -120,32 +124,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    //When there is the situation of having the element at a different 
-    //size than the bitmap itself, for example, the element is scaled 
-    //using CSS or there is pixel-aspect ratio etc. you will have to address this.
-    //for adding a shape to scribble
+
     const scribbleHandler = () => {
         
         document.addEventListener('click', e => {
             //check to see if circle was clicked
             const circleElement = document.querySelector('#clicked-circle')
-            
             //to get the last canvas in div canvases
             const lastCanvas = document.querySelector('.canvases').lastElementChild
             
+        
+
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement) {
-                
-                let rect = lastCanvas.getBoundingClientRect()
+                circleElement.id = 'unclicked-circle'
+                circleElement.classList.remove('bg-blue-500')
 
+                let z_index = parseInt(lastCanvas.style.zIndex) + 1
+
+                  //get x/y of mouse click
+                let rect = lastCanvas.getBoundingClientRect()
                 let scaleX = lastCanvas.width / rect.width
                 let scaleY = lastCanvas.height / rect.height
 
                 xPosition = (e.clientX - rect.left) * scaleX
                 yPosition = (e.clientY - rect.top) * scaleY
-
-                let z_index = parseInt(lastCanvas.style.zIndex) + 1
-
                 
                 let canvas_container = document.querySelector(".canvases");
 
@@ -173,9 +176,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch(CIRCLES_URL, fetchOptions)
                 .then(response => response.json())
                 .then(circleCanvas => renderCircle(circleCanvas))
-               
+            
+            //To edit element shape    
+            }else if(e.target === lastCanvas) {
+                  //get x/y of mouse click
+                let rect = lastCanvas.getBoundingClientRect()
+                let scaleX = lastCanvas.width / rect.width
+                let scaleY = lastCanvas.height / rect.height
+
+                xPosition = (e.clientX - rect.left) * scaleX
+                yPosition = (e.clientY - rect.top) * scaleY
+
+                checkElementPresent(xPosition, yPosition)
             }
         })
+    }
+
+    //check to see against stored shape array if shape is present on mouse click
+    //if shape present render form
+    const checkElementPresent = (xPos, yPos) => {
+
+        for(shape of scribble_shapes) {
+            let context = shape.context
+
+            if(context.isPointInPath(xPos, yPos)) {
+                renderEditElementForm(shape)
+                editXPos = xPos
+                editYPos = yPos
+            }
+        }
+    }
+
+  
+    const renderEditElementForm = shape => {
+       
+        let editElementForm = document.querySelector('.edit-element-form')
+        editElementForm.dataset.circle_id = shape.id
+        toggleEditModal()
+
+    }
+
+    const toggleEditModal = () => {
+        let editModal = document.querySelector('.edit-element-modal')
+        editModal.classList.toggle('show-edit-modal')
     }
 
     const renderForm = target => {
@@ -185,11 +228,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const body = document.querySelector('body')
             elementForm = document.createElement('form')
             elementForm.id = 'element-form'
-            elementForm.className = 'bg-gray-400'
+            elementForm.className = 'bg-gray-400 p-4 m-2' 
             elementForm.dataset.shape = 'circle'
             
             elementForm.innerHTML = `
-                <label >COLOR</label><br>
+                <label class="">Color</label><br>
                 <input type="color" name="color" value="color">
                 <br>
                 <br>
@@ -222,15 +265,97 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault()
             if(e.target.matches('#element-form')) {
                 getElementFormInfo(e.target)
-                //e.target.reset()
-                //need to remove form once submit is clicked
+            } else if(e.target.matches('.edit-element-form')) {
+                updateElementShape(e.target)
+                toggleEditModal()
             }
         })
     }
 
+    const updateElementShape = target => {
+
+        const color = target.color.value
+        const dx = target.dx.value
+        const dy = target.dy.value
+        const radius = target.radius.value
+        const sound = target.sound.value
+
+        const circleId = target.dataset.circle_id
+
+        shapeInfo = {
+            // shape: shape,
+            posX: editXPos,
+            posY: editYPos,
+            color: color,
+            dx: dx,
+            dy: dy,
+            radius: radius,
+            sound: sound,
+        }
+
+        //Patch request to update circleCanvas
+        let fetchOptions = {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Accepts": "application/json"
+            },
+            body: JSON.stringify(shapeInfo)
+        }
+
+        fetch(CIRCLES_URL + circleId, fetchOptions)
+        .then(response => response.json())
+        .then(updatedCircleCanvas => {
+
+
+            //get scribble id and render it
+            renderCircleCanvasUpdate(updatedCircleCanvas)
+        })
+        
+    }
+
+    const renderCircleCanvasUpdate = updatedCircle => {
+        ///edit scribble shape array and DOM
+        let updateScribbleShapes = []
+        for(shape of scribble_shapes) {
+            if(shape.id !== updatedCircle.id) {
+                updateScribbleShapes.push(shape)
+            }
+        }
+
+        scribble_shapes = updateScribbleShapes
+
+        let canvas_container = document.querySelector(".canvases");
+        let canvas = document.createElement("canvas")
+        let context = canvas.getContext('2d')
+        
+        //sets canvas attributes
+        canvas.dataset.id = updatedCircle.id
+        canvas.width = canvas_container.offsetWidth
+        canvas.height = canvas_container.offsetHeight
+        canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
+
+        // sets appropriate layering
+        canvas.style.zIndex = updatedCircle.z_index
+
+        // new Circle instance, push to global array
+        let circle = new Circle(updatedCircle.posX, updatedCircle.posY, updatedCircle.dx, updatedCircle.dy, updatedCircle.radius, updatedCircle.color, updatedCircle.sound, context, updatedCircle.id)
+        scribble_shapes.push(circle)
+        circle.draw()
+        
+        //appends to DOM
+        let oldCircle = document.querySelector(`[data-id='${updatedCircle.id}']`)
+        oldCircle.insertAdjacentElement('afterend', canvas)
+        oldCircle.remove()
+
+    }
+
+
+    //gets form values for circle
     const getElementFormInfo = target => {
         //sound not created in form yet
         //or id
+        
         const shape = target.dataset.shape
         const color = target.color.value
         const dx = target.dx.value
@@ -246,6 +371,8 @@ document.addEventListener('DOMContentLoaded', () => {
             radius: radius,
             sound: sound
         }
+
+        target.remove()
     }
 
     const newScribble = () => {
@@ -306,6 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(bgCanvas => getScribble(bgCanvas.scribble.id))
     }
+
 
     const addLogInListener = () => {
         let userForm = document.querySelector(".login-form")

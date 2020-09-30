@@ -15,11 +15,43 @@
   <div class="modal show-modal">
     <div class="modal-content">
         <h1>Welcome to Scribble!</h1>
-        <form class="login-form">
+        <form class="login-form" >
           <label>Username</label><br>
           <input type="text" name="username" placeholder="Enter Username Here!">
           <br>
-          <input type="submit" value="Submit" >
+          <div class="align-button">
+            <input type="submit" value="Submit" >
+          </div>
+        </form>
+    </div>
+  </div>
+
+  <div class="edit-element-modal">
+    <div class="edit-modal-content">
+        <span class="close-edit-button">&times;</span>
+        <h1>Edit your Shape!</h1>
+        <form class="edit-element-form">
+          <label>Color</label><br>
+            <input type="color" name="color" value="color">
+            <br>
+            <br>
+            <label>Sound </label>
+            <input type="radio" name="sound" value="c">
+            <label>test</label>
+            <br>
+            <br>
+            <label>radius</label><br>
+            <input type="number" name="radius" value="10">
+            <br>
+            <br>
+            <label>Speed</label><br>
+            <input type="number" name="dx" value="10">
+            <label>dx</label>
+            <input type="number" name="dy" value="6">
+            <label>dy</label>
+            <br>
+            <br>
+            <input type="submit" value="Save Edit">
         </form>
     </div>
   </div>

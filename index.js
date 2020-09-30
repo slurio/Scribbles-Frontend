@@ -1,12 +1,10 @@
-let scribble_shapes = []
-
 document.addEventListener('DOMContentLoaded', () => {
     
-
+    let scribble_shapes = []
     let currentUserId;
     let animating = false;
-    //for passing information to create a new shape
-    let shapeInfo
+    let shapeInfo;
+
     const SCRIBBLES_URL = "http://localhost:3000/scribbles/"
     const CIRCLES_URL = "http://localhost:3000/circle_canvases/"
     const BG_URL = "http://localhost:3000/background_canvases/"
@@ -21,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const renderScribble = (scribble) => {
+        clearCanvases();
         renderBackgroundCanvas(scribble);
         renderCanvases(scribble);
     }
@@ -30,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas_container.dataset.scribble_id = scribble.id
         let bg_canvas = document.createElement("canvas");
         bg_canvas.id = "background-canvas"
-        console.log("in renderBackgroundCanvas(), scribble.background = ", scribble.background_canvas)
         bg_canvas.style.zIndex = scribble.background_canvas.z_index;
         bg_canvas.style.background = scribble.background_canvas.background_style
         bg_canvas.className = "scribble-canvas p-2 m-2 border-2 border-gray-700 rounded-lg shadow-lg"
@@ -83,10 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.target.classList.remove('bg-blue-500')
             } else if(e.target.matches('#play-button') || e.target.matches('.play-graphic')) {
                 playAnimation()
-                console.log('play button clicked')
             } else if(e.target.matches('#pause-button') || e.target.matches('.pause-graphic')) {
                 pauseAnimation()
-                console.log('pause button clicked')
             } else if(e.target.matches('#new-scribble')) {
                 newScribble()
             } else if(e.target.matches('#log-out')) {
@@ -230,7 +226,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    //gets form values for circle
     const getElementFormInfo = target => {
         //sound not created in form yet
         //or id
@@ -286,7 +281,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(scribble => {
             newDefaultBackground(scribble)
-            console.log("after new scribble is created", scribble)
         })
     }
 
@@ -318,8 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let username = userForm.username.value
             e.target.reset()
             getUser(username)
-            //get the username from form
-            //fetch request with that username to create or find user
         })
     }
     
@@ -343,6 +335,8 @@ document.addEventListener('DOMContentLoaded', () => {
            
             currentUserId = user.id
 
+            renderScribbleList(user.scribbles)
+
             if(user.scribbles.length === 0){
                 newScribble()
                 toggleLogInModal();
@@ -353,17 +347,36 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
+    const renderScribbleList = (scribbles) => {
+        let dropDown = document.getElementById("scribble-select-menu")
+        removeAllChildNodes(dropDown)
+        for (let scribble of scribbles) {
+            let option = document.createElement("option")
+            option.textContent = scribble.title
+            option.value = scribble.id
+            dropDown.append(option)
+        }
+    }
+
     const toggleLogInModal = () => {
         let modal = document.querySelector(".modal");
         if (!!currentUserId) {
             modal.classList.toggle("show-modal");
-            // form to get new/exiting user id with fetch
         } else if (currentUserId) {
             currentUserId = null
             modal.classList.toggle("show-modal");
         }
     }
 
+    const addDropDownListener = () => {
+        let dropDown = document.getElementById("scribble-select-menu")
+        dropDown.addEventListener("change", (e) => {
+            let scribbleId = e.target.value
+            getScribble(scribbleId)
+        })
+    }
+
+    addDropDownListener();
     addLogInListener();
     toggleLogInModal();
     clickHandler()
@@ -371,21 +384,3 @@ document.addEventListener('DOMContentLoaded', () => {
     submitHandler()
 
 })
-
-
-// const addDropDownListener = () => {
-//     let dropDown = document.getElementById("breed-dropdown");
-//     dropDown.addEventListener("change", (e) => {
-//         let option = e.target.value;
-//         let sortedBreeds = sortBreeds(option);
-//         let breedUl = document.getElementById("dog-breeds");
-//         breedUl.innerHTML = "";
-//         sortedBreeds.forEach(breed => renderBreed(breed));
-//     });
-// };
-
-{/* <select id="breed-dropdown" name="select-breed">
-<option value="a">a</option>
-<option value="b">b</option>
-<option value="c">c</option>
-<option value="d">d</option> */}

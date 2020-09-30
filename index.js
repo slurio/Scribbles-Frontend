@@ -409,6 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(SCRIBBLES_URL, fetchOptions)
         .then(response => response.json())
         .then(scribble => {
+            addToScribbleList(scribble)
             newDefaultBackground(scribble)
         })
     }
@@ -481,11 +482,16 @@ document.addEventListener('DOMContentLoaded', () => {
         let dropDown = document.getElementById("scribble-select-menu")
         removeAllChildNodes(dropDown)
         for (let scribble of scribbles) {
-            let option = document.createElement("option")
-            option.textContent = scribble.title
-            option.value = scribble.id
-            dropDown.append(option)
+            addToScribbleList(scribble)
         }
+    }
+
+    const addToScribbleList = (scribble) => {
+        let dropDown = document.getElementById("scribble-select-menu")
+        let option = document.createElement("option")
+        option.textContent = scribble.title
+        option.value = scribble.id
+        dropDown.append(option)
     }
 
     const toggleLogInModal = () => {

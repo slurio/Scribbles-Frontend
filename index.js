@@ -13,6 +13,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const BG_URL = "http://localhost:3000/background_canvases/"
     const USERS_URL = "http://localhost:3000/users/"
 
+
+    
+    let soundButton = document.getElementById("sound-button")
+
+    soundButton.onclick = function() {
+        if(tones.context.state === 'running') {
+          tones.context.suspend().then(function() {
+            soundButton.textContent = 'Unmute';
+          });
+        } else if(tones.context.state === 'suspended') {
+          tones.context.resume().then(function() {
+            soundButton.textContent = 'Mute';
+          });  
+        }
+      }
+
     const getScribble = (scribble_id) => {  
         fetch(SCRIBBLES_URL+scribble_id)
         .then(response => response.json())
@@ -65,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.style.zIndex = cirCan.z_index
 
         // new Circle instance, push to global array
-        let circle = new Circle(cirCan.posX, cirCan.posY, cirCan.dx, cirCan.dy, cirCan.radius, cirCan.color, cirCan.sound, context, cirCan.id)
+        let circle = new Circle(cirCan.posX, cirCan.posY, cirCan.dx, cirCan.dy, cirCan.radius, cirCan.color, cirCan.octave, cirCan.note, context, cirCan.id)
         scribble_shapes.push(circle)
         circle.draw()
 
@@ -93,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearCanvases()
                 toggleLogInModal()
             } else if (e.target.matches('#delete-scribble')) {
-                console.log("DELETE BUTTON PRESSED")
                 deleteScribbleFromDB();
             }else if(e.target.matches('.close-edit-button')) {
                 const form = document.querySelector('.edit-element-form')
@@ -232,7 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     dy: shapeInfo['dy'],
                     color: shapeInfo['color'],
                     radius: shapeInfo['radius'],
-                    sound: shapeInfo['sound'],
+                    octave: shapeInfo['octave'],
+                    note: shapeInfo['note'],
                     z_index: z_index,
                     scribble_id: canvas_container.dataset.scribble_id
                 }
@@ -308,7 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         //populate current shape attributes in edit form
         editElementForm.color.value = shape.color
-        editElementForm.sound.value = shape.sound
+        editElementForm.octave.value = shape.octave
+        editElementForm.note.value = shape.note
         editElementForm.radius.value = shape.radius
         editElementForm.dx.value = shape.dX
         editElementForm.dy.value = shape.dY
@@ -339,8 +356,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <br>
                 <label> Sound </label>
-                <input type="radio" name="sound" value="c">
-                <label>test</label>
+                <br>
+                <select name="octave" id="octaves-list">
+                  <option value="1">Octave 1</option>
+                  <option value="2">Octave 2</option>
+                  <option value="3">Octave 3</option>
+                  <option value="4">Octave 4</option>
+                  <option value="5">Octave 5</option>
+                  <option value="6">Octave 6</option>
+                  <option value="7">Octave 7</option>
+                </select>    
+                <select name="note" id="notes-list">
+                  <option value="c">c</option>
+                  <option value="c#">c#</option>
+                  <option value="db">db</option>
+                  <option value="d">d</option>
+                  <option value="eb">eb</option>
+                  <option value="e">e</option>
+                  <option value="f">f</option>
+                  <option value="f#">f#</option>
+                  <option value="g">g</option>
+                  <option value="g#">g#</option>
+                  <option value="ab">ab</option>
+                  <option value="a">a</option>
+                  <option value="a#">a#</option>
+                  <option value="bb">bb</option>
+                  <option value="b">b</option>
+                </select>
                 <br>
                 <br>
                 <label>radius</label><br>
@@ -420,21 +462,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const dx = target.dx.value
         const dy = target.dy.value
         const radius = target.radius.value
-        const sound = target.sound.value
+        const octave = target.octave.value
+        const note = target.note.value
 
         const circleId = target.dataset.circle_id
         target.reset()
 
         shapeInfo = {
-            // shape: shape,
             posX: editXPos,
             posY: editYPos,
             color: color,
             dx: dx,
             dy: dy,
             radius: radius,
-            sound: sound,
+            octave: octave,
+            note: note
         }
+
+        console.log("shapeInfo for PATCH", shapeInfo)
 
         //Patch request to update circleCanvas
         let fetchOptions = {
@@ -449,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(CIRCLES_URL + circleId, fetchOptions)
         .then(response => response.json())
         .then(updatedCircleCanvas => {
-
+            console.log("updateCircleCanvas", updatedCircleCanvas)
 
             //get scribble id and render it
             renderCircleCanvasUpdate(updatedCircleCanvas)
@@ -483,7 +528,8 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.style.zIndex = updatedCircle.z_index
 
         // new Circle instance, push to global array
-        let circle = new Circle(updatedCircle.posX, updatedCircle.posY, updatedCircle.dx, updatedCircle.dy, updatedCircle.radius, updatedCircle.color, updatedCircle.sound, context, updatedCircle.id)
+        let circle = new Circle(updatedCircle.posX, updatedCircle.posY, updatedCircle.dx, updatedCircle.dy, updatedCircle.radius, updatedCircle.color, updatedCircle.octave, updatedCircle.note, context, updatedCircle.id)
+        console.log("new circle: ", circle)
         scribble_shapes.push(circle)
         circle.draw()
         
@@ -504,7 +550,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const dx = target.dx.value
         const dy = target.dy.value
         const radius = target.radius.value
-        const sound = target.sound.value
+        const octave = target.octave.value
+        const note = target.note.value
+
+        console.log(octave, note)
        
         shapeInfo = {
             shape: shape,
@@ -512,7 +561,8 @@ document.addEventListener('DOMContentLoaded', () => {
             dx: dx,
             dy: dy,
             radius: radius,
-            sound: sound
+            octave: octave,
+            note: note
         }
 
         target.remove()

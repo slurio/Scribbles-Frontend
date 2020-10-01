@@ -312,66 +312,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const renderForm = target => {
-        const form = document.querySelector('#element-form')
-        if(!form){
-            //render a pop up menu with options for velocity/color/sound/etc after cicle is clicked in element menu
+        let newShapeModal = document.querySelector('.create-element-modal')
+        newShapeModal.classList.toggle('show-create-element-modal')
+        // const form = document.querySelector('#element-form')
+        // if(!form){
+        //     //render a pop up menu with options for velocity/color/sound/etc after cicle is clicked in element menu
 
-            const body = document.querySelector('body')
-            elementForm = document.createElement('form')
-            elementForm.id = 'element-form'
-            elementForm.className = 'bg-gray-400 p-4 m-2' 
-            elementForm.dataset.shape = 'circle'
+        //     const body = document.querySelector('body')
+        //     elementForm = document.createElement('form')
+        //     elementForm.id = 'element-form'
+        //     elementForm.className = 'bg-gray-400 p-4 m-2' 
+        //     elementForm.dataset.shape = 'circle'
             
-            elementForm.innerHTML = `
-                <label class="">Color</label><br>
-                <input type="color" name="color" value="color">
-                <br>
-                <br>
-                <label> Sound </label>
-                <br>
-                <select name="octave" id="octaves-list">
-                  <option value="1">Octave 1</option>
-                  <option value="2">Octave 2</option>
-                  <option value="3">Octave 3</option>
-                  <option value="4">Octave 4</option>
-                  <option value="5">Octave 5</option>
-                  <option value="6">Octave 6</option>
-                  <option value="7">Octave 7</option>
-                </select>    
-                <select name="note" id="notes-list">
-                  <option value="c">c</option>
-                  <option value="c#">c#</option>
-                  <option value="db">db</option>
-                  <option value="d">d</option>
-                  <option value="eb">eb</option>
-                  <option value="e">e</option>
-                  <option value="f">f</option>
-                  <option value="f#">f#</option>
-                  <option value="g">g</option>
-                  <option value="g#">g#</option>
-                  <option value="ab">ab</option>
-                  <option value="a">a</option>
-                  <option value="a#">a#</option>
-                  <option value="bb">bb</option>
-                  <option value="b">b</option>
-                </select>
-                <br>
-                <br>
-                <label>radius</label><br>
-                <input type="number" name="radius" value="10">
-                <br>
-                <br>
-                <label >Speed</label><br>
-                <input type="number" name="dx" value="10">
-                <label>dx</label>
-                <input type="number" name="dy" value="6">
-                <label>dy</label>
-                <br>
-                <br>
-                <input type="submit" value="Click + press on scribble to place!" >
-            `
-            body.insertAdjacentElement('beforeend', elementForm)
-        }        
+        //     elementForm.innerHTML = `
+        //         <label class="">Color</label><br>
+        //         <input type="color" name="color" value="color">
+        //         <br>
+        //         <br>
+        //         <label> Sound </label>
+        //         <br>
+        //         <select name="octave" id="octaves-list">
+        //           <option value="1">Octave 1</option>
+        //           <option value="2">Octave 2</option>
+        //           <option value="3">Octave 3</option>
+        //           <option value="4">Octave 4</option>
+        //           <option value="5">Octave 5</option>
+        //           <option value="6">Octave 6</option>
+        //           <option value="7">Octave 7</option>
+        //         </select>    
+        //         <select name="note" id="notes-list">
+        //           <option value="c">c</option>
+        //           <option value="c#">c#</option>
+        //           <option value="db">db</option>
+        //           <option value="d">d</option>
+        //           <option value="eb">eb</option>
+        //           <option value="e">e</option>
+        //           <option value="f">f</option>
+        //           <option value="f#">f#</option>
+        //           <option value="g">g</option>
+        //           <option value="g#">g#</option>
+        //           <option value="ab">ab</option>
+        //           <option value="a">a</option>
+        //           <option value="a#">a#</option>
+        //           <option value="bb">bb</option>
+        //           <option value="b">b</option>
+        //         </select>
+        //         <br>
+        //         <br>
+        //         <label>radius</label><br>
+        //         <input type="number" name="radius" value="10">
+        //         <br>
+        //         <br>
+        //         <label >Speed</label><br>
+        //         <input type="number" name="dx" value="10">
+        //         <label>dx</label>
+        //         <input type="number" name="dy" value="6">
+        //         <label>dy</label>
+        //         <br>
+        //         <br>
+        //         <input type="submit" value="Click + press on scribble to place!" >
+        //     `
+        //     body.insertAdjacentElement('beforeend', elementForm)
+        // }        
                
     }
 
@@ -511,7 +513,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //gets form values for circle
     const getElementFormInfo = target => {
-        
+
+        target.dataset.shape = 'circle'
         const shape = target.dataset.shape
         const color = target.color.value
         const dx = target.dx.value
@@ -519,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const radius = target.radius.value
         const octave = target.octave.value
         const note = target.note.value
-       
+     
         shapeInfo = {
             shape: shape,
             color: color,
@@ -530,7 +533,8 @@ document.addEventListener('DOMContentLoaded', () => {
             note: note
         }
 
-        target.remove()
+        let newShapeModal = document.querySelector('.create-element-modal')
+        newShapeModal.classList.toggle('show-create-element-modal')
     }
 
     const newScribble = (title) => {

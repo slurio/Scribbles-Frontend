@@ -15,19 +15,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     
-    let soundButton = document.getElementById("sound-button")
+    // let soundButton = document.getElementById("sound-button-anson")
 
-    soundButton.onclick = function() {
-        if(tones.context.state === 'running') {
-          tones.context.suspend().then(function() {
-            soundButton.textContent = 'Unmute';
-          });
-        } else if(tones.context.state === 'suspended') {
-          tones.context.resume().then(function() {
-            soundButton.textContent = 'Mute';
-          });  
-        }
-      }
+    // soundButton.onclick = function() {
+    //     if(tones.context.state === 'running') {
+    //       tones.context.suspend().then(function() {
+    //         soundButton.textContent = 'Unmute';
+    //       });
+    //     } else if(tones.context.state === 'suspended') {
+    //       tones.context.resume().then(function() {
+    //         soundButton.textContent = 'Mute';
+    //       });  
+    //     }
+    //   }
 
     const getScribble = (scribble_id) => {  
         fetch(SCRIBBLES_URL+scribble_id)
@@ -119,17 +119,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }else if(e.target.matches('.delete-shape')){
                 deleteShape(e.target)
             }else if(e.target.matches('.svg-sound-on') || e.target.matches('.st0')){
-                document.querySelector('#sound-button').style.display = "none"
-
-                document.querySelector('#sound-button-off').style.display = "inline"
-
+                if(tones.context.state === 'running') {
+                    tones.context.suspend().then(function() {
+                        document.querySelector('#sound-button').style.display = "none"
+                        document.querySelector('#sound-button-off').style.display = "inline"
+                    });
+                }    
             }else if(e.target.matches('.svg-button-off') || e.target.matches('.st0')) {
-                document.querySelector('#sound-button').style.display = null
-
-                document.querySelector('#sound-button-off').style.display = "none"
+                    tones.context.resume().then(function() {
+                        document.querySelector('#sound-button').style.display = null
+                        document.querySelector('#sound-button-off').style.display = "none"
+                })
             }
         })
     }
+    
 
     const deleteShape = target => {
 

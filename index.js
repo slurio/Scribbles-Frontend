@@ -533,6 +533,8 @@ document.addEventListener('DOMContentLoaded', () => {
             note: note
         }
 
+        target.reset()
+
         let newShapeModal = document.querySelector('.create-element-modal')
         newShapeModal.classList.toggle('show-create-element-modal')
     }

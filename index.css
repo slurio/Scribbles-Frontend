@@ -1,9 +1,3 @@
-
-/* .board-editor-menu {
-    width: 150px;
-    height: 620px;
-} */
-
 .user-control-menu {
     width: 240px;
     /* height: 110px; */
@@ -197,7 +191,7 @@ canvas {
 
 .delete-shape {
     float: right;
-    width: 3rem;
+    width: 4rem;
     line-height: 1.5rem;
     text-align: center;
     cursor: pointer;
@@ -329,3 +323,4 @@ canvas {
     background-color: #CBD5E0;
     color: white;
 }
+

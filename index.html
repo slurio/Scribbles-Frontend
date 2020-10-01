@@ -45,14 +45,14 @@
   <div class="create-element-modal">
     <div class="create-element-modal-content">
         <span class="close-create-button">&times;</span>
-        <h1 class="block font-bold text-gray-700 text-2xl mt-2">Edit your Shape!</h1>
-        <form id= "element-form" >
+        <h1 class="block font-bold text-gray-700 text-2xl mt-2">Create a Shape!</h1>
+        <form id= "element-form" class="px-8 pt-6 pb-4 mb-2">
           <label class="font-bold">Color:</label><br>
-            <input type="color" name="color" value="color">
+            <input class= "mb-4 mt-2" type="color" name="color" value="color">
             <br>
             <label class="font-bold">Sound:</label>
             <br>
-            <select name="octave" id="octaves-list">
+            <select class="mb-4 mt-2 mr-6 shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" name="octave" id="octaves-list">
               <option value="1">Octave 1</option>
               <option value="2">Octave 2</option>
               <option value="3">Octave 3</option>
@@ -61,7 +61,7 @@
               <option value="6">Octave 6</option>
               <option value="7">Octave 7</option>
             </select>    
-            <select name="note" id="notes-list">
+            <select class="mb-4 mt-2 mr-6 shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" name="note" id="notes-list">
               <option value="c">c</option>
               <option value="c#">c#</option>
               <option value="db">db</option>
@@ -79,19 +79,19 @@
               <option value="b">b</option>
             </select>
             <br>
+            <label class="font-bold">Radius:</label><br>
+            <input class="cursor-pointer mb-4 mt-2 mt-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" name="radius" value="10">
             <br>
-            <label>Radius:</label><br>
-            <input type="number" name="radius" value="10">
+            <label class="font-bold">Speed:</label><br>
+            <label class="font-medium pr-2">dx:</label>
+            <input class="cursor-pointer mb-4 mt-2 mt-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" name="dx" value="10">
             <br>
+            <label class="font-medium pr-2">dy:</label>
+            <input class="cursor-pointer mb-4 mt-2 mt-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" name="dy" value="6">
             <br>
-            <label>Speed:</label><br>
-            <input type="number" name="dx" value="10">
-            <label>dx</label>
-            <input type="number" name="dy" value="6">
-            <label>dy</label>
-            <br>
-            <br>
-            <input type="submit" value="Create">
+            <div class="align-button">
+              <input class="cursor-pointer mt-6 px-4 py-2 bg-gray-300 hover:text-white hover:bg-gray-400 rounded" type="submit" value="Create">
+            </div>
         </form>
     </div>
   </div>
@@ -99,15 +99,14 @@
   <div class="edit-element-modal">
     <div class="edit-modal-content">
         <span class="close-edit-button">&times;</span>
-        <h1>Edit your Shape!</h1>
-        <form class="edit-element-form">
-          <label>Color:</label><br>
-            <input type="color" name="color" value="color">
+        <h1 class="text-center font-bold text-gray-700 text-2xl mt-2">Edit your Shape!</h1>
+        <form class="edit-element-form px-8 pt-6 pb-4 mb-2">
+          <label class="font-bold">Color:</label><br>
+            <input class= "mb-4 mt-2" type="color" name="color" value="color">
             <br>
+            <label class="font-bold">Sound:</label>
             <br>
-            <label>Sound:</label>
-            <br>
-            <select name="octave" id="octaves-list">
+            <select class= "mb-4 mt-2 mr-6 shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" name="octave" id="octaves-list">
               <option value="1">Octave 1</option>
               <option value="2">Octave 2</option>
               <option value="3">Octave 3</option>
@@ -116,7 +115,7 @@
               <option value="6">Octave 6</option>
               <option value="7">Octave 7</option>
             </select>    
-            <select name="note" id="notes-list">
+            <select class= "mb-4 mt-2 mr-6 shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:shadow-outline" name="note" id="notes-list">
               <option value="c">c</option>
               <option value="c#">c#</option>
               <option value="db">db</option>
@@ -134,20 +133,18 @@
               <option value="b">b</option>
             </select>
             <br>
+            <label class="font-bold">Radius:</label><br>
+            <input class="cursor-pointer mb-4 mt-2 mt-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" name="radius" value="10">
             <br>
-            <label>Radius:</label><br>
-            <input type="number" name="radius" value="10">
+            <label class="font-bold">Speed:</label><br>
+            <label class="font-medium pr-2">dx</label>
+            <input class="cursor-pointer mb-4 mt-2 mt-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" name="dx" value="10">
             <br>
+            <label class="font-medium pr-2">dy</label>
+            <input class="cursor-pointer mb-4 mt-2 mt-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" name="dy" value="6">
             <br>
-            <label>Speed:</label><br>
-            <input type="number" name="dx" value="10">
-            <label>dx</label>
-            <input type="number" name="dy" value="6">
-            <label>dy</label>
-            <br>
-            <br>
-            <input type="submit" value="Save Edit">
-            <span class="delete-shape">Delete</span>
+            <input class="cursor-pointer mt-6 px-4 py-2 bg-gray-300 hover:text-white hover:bg-gray-400 rounded" type="submit" value="Save Edit">
+            <span class="delete-shape pl-2 pr-2 mt-6 px-10 py-2 bg-gray-300 hover:text-white hover:bg-gray-400 rounded">Delete</span>
         </form>
     </div>
   </div>

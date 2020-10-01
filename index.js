@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('#clicked-circle')) {
                 e.target.id = 'unclicked-circle'
                 e.target.classList.remove('bg-blue-500')
-                document.querySelector('#element-form').remove()
             } else if(e.target.matches('#play-button') || e.target.matches('.play-graphic')) {
                 playAnimation()
             } else if(e.target.matches('#pause-button') || e.target.matches('.pause-graphic')) {
@@ -118,6 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             }else if(e.target.matches('.close-new-scribble-button')) {
                 toggleNewScribbleModal()
+            }else if(e.target.matches('.close-create-button')) {
+                let newShapeModal = document.querySelector('.create-element-modal')
+                newShapeModal.classList.toggle('show-create-element-modal')
+                let circleButton = document.querySelector('#clicked-circle')
+                circleButton.id = 'unclicked-circle'
+                circleButton.classList.remove('bg-blue-500')
             }
         })
     }

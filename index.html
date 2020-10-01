@@ -18,8 +18,8 @@
         <span class="close-new-scribble-button">&times;</span>
         <h1 class="block font-bold text-gray-700 text-2xl mt-2">Create New Scribble!</h1>
         <form class="new-scribble-form px-8 pt-6 pb-4 mb-2" >
-          <label class="block font-bold">Title</label><br>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="title" placeholder="Enter Title Here">
+          <label class="font-bold">Title</label><br>
+          <input class="mt-2 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="title" placeholder="Enter Title Here">
           <br>
           <div class="submit-align-button">
             <input class="cursor-pointer mt-6 px-4 py-2 bg-gray-300 hover:text-white hover:bg-gray-400 rounded" type="submit" value="Submit" >
@@ -32,8 +32,8 @@
     <div class="modal-content">
         <h1 class="block font-bold text-gray-700 text-4xl">Welcome to Scribble!</h1>
         <form class="login-form px-8 pt-6 pb-4 mb-2" >
-          <label class="block font-bold">Username</label><br>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="username" placeholder="Enter Username Here!">
+          <label class="font-bold">Username</label><br>
+          <input class="mt-2 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" name="username" placeholder="Enter Username Here!">
           <br>
           <div class="align-button">
             <input class="cursor-pointer mt-6 px-4 py-2 bg-gray-300 hover:text-white hover:bg-gray-400 rounded" type="submit" value="Submit" >
@@ -45,13 +45,12 @@
   <div class="create-element-modal">
     <div class="create-element-modal-content">
         <span class="close-create-button">&times;</span>
-        <h1>Edit your Shape!</h1>
+        <h1 class="block font-bold text-gray-700 text-2xl mt-2">Edit your Shape!</h1>
         <form id= "element-form" >
-          <label>Color:</label><br>
+          <label class="font-bold">Color:</label><br>
             <input type="color" name="color" value="color">
             <br>
-            <br>
-            <label>Sound:</label>
+            <label class="font-bold">Sound:</label>
             <br>
             <select name="octave" id="octaves-list">
               <option value="1">Octave 1</option>
@@ -157,13 +156,13 @@
     <div class="edit-bg-modal-content">
         <span class="close-bg-edit-button">&times;</span>
         <h1 class="block text-center font-bold text-gray-700 text-2xl mt-2">Edit your Background!</h1>
-        <form class="edit-bg-form px-8 pt-6 pb-4 mb-">
-          <label class="block font-bold">Color</label><br>
-            <input type="color" name="color" value="color">
+        <form class="edit-bg-form px-8 pt-6 pb-4 mb-2">
+          <label class="font-bold">Color:</label><br>
+            <input class="mt-2" type="color" name="color" value="color">
             <br>
             <br>
             <div id="bg-submit">
-              <input class="cursor-pointer mt-6 px-4 py-2 bg-gray-300 hover:text-white hover:bg-gray-400 rounded" type="submit" value="Save Edit">
+              <input class="cursor-pointer mt-2 px-4 py-2 bg-gray-300 hover:text-white hover:bg-gray-400 rounded" type="submit" value="Save Edit">
             </div>
         </form>
     </div>

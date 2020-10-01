@@ -32,20 +32,46 @@
         <span class="close-edit-button">&times;</span>
         <h1>Edit your Shape!</h1>
         <form class="edit-element-form">
-          <label>Color</label><br>
+          <label>Color:</label><br>
             <input type="color" name="color" value="color">
             <br>
             <br>
-            <label>Sound </label>
-            <input type="radio" name="sound" value="c">
-            <label>test</label>
+            <label>Sound:</label>
+            <br>
+            <select name="octave" id="octaves-list">
+              <option value="1">Octave 1</option>
+              <option value="2">Octave 2</option>
+              <option value="3">Octave 3</option>
+              <option value="4">Octave 4</option>
+              <option value="5">Octave 5</option>
+              <option value="6">Octave 6</option>
+              <option value="7">Octave 7</option>
+            </select>    
+            <select name="note" id="notes-list">
+              <option value="c">c</option>
+              <option value="c#">c#</option>
+              <option value="db">db</option>
+              <option value="d">d</option>
+              <option value="eb">eb</option>
+              <option value="e">e</option>
+              <option value="f">f</option>
+              <option value="f#">f#</option>
+              <option value="g">g</option>
+              <option value="g#">g#</option>
+              <option value="ab">ab</option>
+              <option value="a">a</option>
+              <option value="a#">a#</option>
+              <option value="bb">bb</option>
+              <option value="b">b</option>
+            </select>
+            <!-- <input type="radio" name="sound" value="c"> -->
             <br>
             <br>
-            <label>radius</label><br>
+            <label>Radius:</label><br>
             <input type="number" name="radius" value="10">
             <br>
             <br>
-            <label>Speed</label><br>
+            <label>Speed:</label><br>
             <input type="number" name="dx" value="10">
             <label>dx</label>
             <input type="number" name="dy" value="6">
@@ -95,14 +121,8 @@
   </div>
 
     <div class="container-top flex flex-row flex-wrap justify-center ">
-       
-        <!-- <div class="board-editor-menu p-2 m-2 bg-gray-100 border-2 border-gray-700 rounded-lg shadow-lg">
-          Board Editor Menu
-        </div> -->
-        
         <div class="canvases">        
-        </div>
-        
+        </div>  
     </div>
     
     <div class="container-bottom flex justify-center">
@@ -127,5 +147,11 @@
       </div>
 
     </div>
+
+
+
+
+
+
   </body>
 </html>

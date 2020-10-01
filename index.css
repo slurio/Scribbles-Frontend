@@ -1,12 +1,12 @@
 
-.board-editor-menu {
+/* .board-editor-menu {
     width: 150px;
     height: 620px;
-}
+} */
 
 .user-control-menu {
-    width: 190px;
-    height: 110px;
+    width: 220px;
+    /* height: 110px; */
 }
 
 
@@ -16,20 +16,20 @@
 }
 
 .play-graphic {
-    width: 30px;
-    height: 34px;
-    border-top: 26px solid transparent;
+    width: 24px;
+    height: 28px;
+    border-top: 20px solid transparent;
     border-left: 30px solid #718096;
-    border-bottom: 26px solid transparent;
+    border-bottom: 20px solid transparent;
     margin-left: 8px;
 }
 
 
 .pause-graphic {
-    width: 30px;
-    height: 38px;
-    border-right: 10px solid #718096;
-    border-left: 10px solid #718096;  
+    width: 25px;
+    height: 33px;
+    border-right: 9px solid #718096;
+    border-left: 9px solid #718096;  
 }
 
 canvas {
@@ -205,4 +205,8 @@ canvas {
 
 .delete-shape:hover {
     background-color: darkgray;
+}
+
+#sound-button-off {
+    display: none;
 }

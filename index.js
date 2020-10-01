@@ -103,6 +103,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 toggleEditBgModal()
             }else if(e.target.matches('.delete-shape')){
                 deleteShape(e.target)
+            }else if(e.target.matches('.svg-sound-on') || e.target.matches('.st0')){
+                document.querySelector('#sound-button').style.display = "none"
+
+                document.querySelector('#sound-button-off').style.display = "inline"
+
+            }else if(e.target.matches('.svg-button-off') || e.target.matches('.st0')) {
+                document.querySelector('#sound-button').style.display = null
+
+                document.querySelector('#sound-button-off').style.display = "none"
             }
         })
     }
@@ -644,6 +653,8 @@ document.addEventListener('DOMContentLoaded', () => {
             getScribble(scribbleId)
         })
     }
+
+
 
     const deleteScribbleFromDB = () => {
         let dropDown = document.getElementById("scribble-select-menu")

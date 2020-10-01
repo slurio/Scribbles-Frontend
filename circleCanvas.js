@@ -29,9 +29,11 @@ class Circle {
 
     checkBoundaries(canvas) {
         if(this.posY + this.dY > canvas.height || this.posY + this.dY < 0) {
-            this.dY = -this.dY;   
+            this.dY = -this.dY;
+            tones.play(this.sound);
         } else if (this.posX + this.dX > canvas.width || this.posX + this.dX < 0) {
-            this.dX = -this.dX;   
+            this.dX = -this.dX; 
+            tones.play(this.sound);
         }
     }
 }

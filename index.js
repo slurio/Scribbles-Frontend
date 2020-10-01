@@ -13,6 +13,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const BG_URL = "http://localhost:3000/background_canvases/"
     const USERS_URL = "http://localhost:3000/users/"
 
+
+    
+    let soundButton = document.getElementById("sound-button")
+
+    soundButton.onclick = function() {
+        if(tones.context.state === 'running') {
+          tones.context.suspend().then(function() {
+            soundButton.textContent = 'Unmute';
+          });
+        } else if(tones.context.state === 'suspended') {
+          tones.context.resume().then(function() {
+            soundButton.textContent = 'Mute';
+          });  
+        }
+      }
+
     const getScribble = (scribble_id) => {  
         fetch(SCRIBBLES_URL+scribble_id)
         .then(response => response.json())
@@ -93,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 clearCanvases()
                 toggleLogInModal()
             } else if (e.target.matches('#delete-scribble')) {
-                console.log("DELETE BUTTON PRESSED")
                 deleteScribbleFromDB();
             }else if(e.target.matches('.close-edit-button')) {
                 const form = document.querySelector('.edit-element-form')

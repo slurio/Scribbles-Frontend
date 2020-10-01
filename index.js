@@ -13,22 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const BG_URL = "http://localhost:3000/background_canvases/"
     const USERS_URL = "http://localhost:3000/users/"
 
-
-    
-    // let soundButton = document.getElementById("sound-button-anson")
-
-    // soundButton.onclick = function() {
-    //     if(tones.context.state === 'running') {
-    //       tones.context.suspend().then(function() {
-    //         soundButton.textContent = 'Unmute';
-    //       });
-    //     } else if(tones.context.state === 'suspended') {
-    //       tones.context.resume().then(function() {
-    //         soundButton.textContent = 'Mute';
-    //       });  
-    //     }
-    //   }
-
     const getScribble = (scribble_id) => {  
         fetch(SCRIBBLES_URL+scribble_id)
         .then(response => response.json())
@@ -104,9 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if(e.target.matches('#pause-button') || e.target.matches('.pause-graphic')) {
                 pauseAnimation()
             } else if(e.target.matches('#new-scribble')) {
-                newScribble()
+                toggleNewScribbleModal()
+                // newScribble()
             } else if(e.target.matches('#log-out')) {
                 clearCanvases()
+                clearWelcomeMessage()
                 toggleLogInModal()
             } else if (e.target.matches('#delete-scribble')) {
                 deleteScribbleFromDB();
@@ -133,16 +119,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         })
     }
+
+    const toggleNewScribbleModal = () => {
+        let newScribModal = document.querySelector('.new-scribble-modal')
+        newScribModal.classList.toggle('show-new-scribble-modal')
+    }
     
 
     const deleteShape = target => {
 
         let circleId = document.querySelector('.edit-element-form').dataset.circle_id
         toggleEditModal()
-        //put id on edit shape form 
-        //pull that for fetch to delete and update DB
-        //render on DOM and update scribble_shape array
-        
         let options = {
             method: "DELETE"
         }
@@ -165,28 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         scribble_shapes = updateScribbleShapes
-
-        // let canvas_container = document.querySelector(".canvases");
-        // let canvas = document.createElement("canvas")
-        // let context = canvas.getContext('2d')
-        
-        // //sets canvas attributes
-        // canvas.dataset.id = updatedCircle.id
-        // canvas.width = canvas_container.offsetWidth
-        // canvas.height = canvas_container.offsetHeight
-        // canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
-
-        // // sets appropriate layering
-        // canvas.style.zIndex = updatedCircle.z_index
-
-        // // new Circle instance, push to global array
-        // let circle = new Circle(updatedCircle.posX, updatedCircle.posY, updatedCircle.dx, updatedCircle.dy, updatedCircle.radius, updatedCircle.color, updatedCircle.sound, context, updatedCircle.id)
-        // scribble_shapes.push(circle)
-        // circle.draw()
         
         //appends to DOM
         let oldCircle = document.querySelector(`[data-id='${deletedCircle.id}']`)
-        // oldCircle.insertAdjacentElement('afterend', canvas)
         oldCircle.remove()
 
     }
@@ -273,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 shapeInfo = {}
             //To edit element shape    
             }else if(e.target === lastCanvas && !circleElement) {
-                  //get x/y of mouse click
+                //get x/y of mouse click
                 let rect = lastCanvas.getBoundingClientRect()
                 let scaleX = lastCanvas.width / rect.width
                 let scaleY = lastCanvas.height / rect.height
@@ -402,30 +370,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 <br>
                 <input type="submit" value="Click + press on scribble to place!" >
             `
-
             body.insertAdjacentElement('beforeend', elementForm)
         }        
                
     }
 
     const submitHandler = () => {
-
         document.addEventListener('submit', e => {
             e.preventDefault()
             if(e.target.matches('#element-form')) {
-                // const circleElement = document.querySelector('#clicked-circle')
-                // circleElement.id = 'unclicked-circle'
-                // circleElement.classList.remove('bg-blue-500')
                 getElementFormInfo(e.target)
             } else if(e.target.matches('.edit-element-form')) {
-                updateElementShape(e.target)
                 toggleEditModal()
+                updateElementShape(e.target)
             } else if(e.target.matches('.edit-bg-form')) {
                 toggleEditBgModal()
                 saveBackground(e.target)
+            }else if(e.target.matches('.new-scribble-form')) {
+                toggleNewScribbleModal()
+                let title = e.target.title.value
+                e.target.reset()
+                newScribble(title)
             }
         })
     }
+
+    
 
     const saveBackground = target => {
         const originalBg = document.querySelector('#background-canvas')
@@ -483,8 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
             note: note
         }
 
-        console.log("shapeInfo for PATCH", shapeInfo)
-
         //Patch request to update circleCanvas
         let fetchOptions = {
             method: "PATCH",
@@ -498,9 +466,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(CIRCLES_URL + circleId, fetchOptions)
         .then(response => response.json())
         .then(updatedCircleCanvas => {
-            console.log("updateCircleCanvas", updatedCircleCanvas)
-
-            //get scribble id and render it
             renderCircleCanvasUpdate(updatedCircleCanvas)
         })
         
@@ -546,8 +511,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //gets form values for circle
     const getElementFormInfo = target => {
-        //sound not created in form yet
-        //or id
         
         const shape = target.dataset.shape
         const color = target.color.value
@@ -556,8 +519,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const radius = target.radius.value
         const octave = target.octave.value
         const note = target.note.value
-
-        console.log(octave, note)
        
         shapeInfo = {
             shape: shape,
@@ -572,9 +533,12 @@ document.addEventListener('DOMContentLoaded', () => {
         target.remove()
     }
 
-    const newScribble = () => {
+    const newScribble = (title) => {
+        //render modal and ask for title name
+        //get title name from form and pass to postScribble function
+       
         clearCanvases()
-        postScribble()
+        postScribble(title)
     }
 
     const clearCanvases = () => {
@@ -589,12 +553,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const postScribble = () => {
-        let randId = Math.floor(Math.random() * Math.floor(1000))
+    const postScribble = (title) => {
+  
+        if(title === ""){
+            let randId = Math.floor(Math.random() * Math.floor(1000))
+            title = "New Scribble" + randId
+        }else {
+            title = title
+        }
+        
         let scribbleObj = {
-            title: "New Scribble" + randId,
+            title: title,
             user_id: currentUserId
         }
+
         let fetchOptions = {
             method: "POST",
             headers: {
@@ -637,9 +609,21 @@ document.addEventListener('DOMContentLoaded', () => {
         userForm.addEventListener("submit", (e) => {
             e.preventDefault();
             let username = userForm.username.value
+            setWelcomeMessage(username)
             e.target.reset()
             getUser(username)
         })
+    }
+
+    const   clearWelcomeMessage = () => {
+        let welcomeMsg = document.querySelector(".welcome-user")
+        welcomeMsg.textContent = ""
+    }
+
+
+    const setWelcomeMessage = (username) => {
+        let welcomeMsg = document.querySelector(".welcome-user")
+        welcomeMsg.textContent = `Welcome ${username}!`
     }
     
     const getUser = (username) => {
@@ -707,8 +691,6 @@ document.addEventListener('DOMContentLoaded', () => {
             getScribble(scribbleId)
         })
     }
-
-
 
     const deleteScribbleFromDB = () => {
         let dropDown = document.getElementById("scribble-select-menu")

@@ -130,11 +130,12 @@ canvas {
     text-align: center;
     cursor: pointer;
     border-radius: 0.25rem;
-    background-color: lightgray;
+    background-color: #E2E8F0;
 } 
  
 .close-edit-button:hover {
-    background-color: darkgray;
+    background-color: #CBD5E0;
+    color: white;
 }
 
 .show-edit-modal {
@@ -179,11 +180,12 @@ canvas {
     text-align: center;
     cursor: pointer;
     border-radius: 0.25rem;
-    background-color: lightgray;
+    background-color: #E2E8F0;
 } 
  
 .close-bg-edit-button:hover {
-    background-color: darkgray;
+    background-color: #CBD5E0;
+    color: white;
 }
 
 .show-edit-bg-modal {
@@ -252,6 +254,22 @@ canvas {
     transition: visibility 0s linear 0s, opacity 0.25s 0s, transform 0.25s;
 }
 
+.close-new-scribble-button {
+    float: right;
+    width: 1.5rem;
+    line-height: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    background-color: #E2E8F0;
+} 
+ 
+.close-new-scribble-button:hover {
+    background-color: #CBD5E0;
+    color: white;
+}
+
+
 
 .create-element-modal {
     position: fixed;
@@ -293,4 +311,21 @@ canvas {
     transition: visibility 0s linear 0s, opacity 0.25s 0s, transform 0.25s;
 }
 
+#bg-submit {
+    text-align: center;
+}
 
+.close-create-button {
+    float: right;
+    width: 1.5rem;
+    line-height: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    background-color: #E2E8F0;
+}
+
+.close-create-button:hover {
+    background-color: #CBD5E0;
+    color: white;
+}

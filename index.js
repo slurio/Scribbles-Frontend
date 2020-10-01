@@ -116,6 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         document.querySelector('#sound-button').style.display = null
                         document.querySelector('#sound-button-off').style.display = "none"
                 })
+            }else if(e.target.matches('.close-new-scribble-button')) {
+                toggleNewScribbleModal()
             }
         })
     }

@@ -117,6 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         document.querySelector('#sound-button').style.display = null
                         document.querySelector('#sound-button-off').style.display = "none"
                 })
+            } else if (e.target.matches('#fullscreen')) {
+                let board = document.querySelector(".canvases")
+                board.requestFullscreen();
             }
         })
     }

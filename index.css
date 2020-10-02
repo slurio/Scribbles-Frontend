@@ -202,6 +202,20 @@ canvas {
     background-color: darkgray;
 }
 
+.create-random-shape {
+    float: right;
+    width: 4rem;
+    line-height: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    background-color: lightgray;
+}
+
+.create-random-shape:hover {
+    background-color: darkgray;
+}
+
 #sound-button-off {
     display: none;
 }

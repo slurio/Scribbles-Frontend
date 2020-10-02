@@ -32,6 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
         let canvas_container = document.querySelector(".canvases");
         canvas_container.dataset.scribble_id = scribble.id
         let bg_canvas = document.createElement("canvas");
+
+        bg_canvas.width = canvas_container.offsetWidth
+        bg_canvas.height = canvas_container.offsetHeight
+
         bg_canvas.id = "background-canvas"
         bg_canvas.dataset.bg_id =scribble.background_canvas.id
         bg_canvas.style.zIndex = scribble.background_canvas.z_index;
@@ -140,25 +144,29 @@ document.addEventListener('DOMContentLoaded', () => {
             color: getRandomColor(),
             octave: randomOctave(),
             note: randomNote(),
-            radius: Math.random() * 45,
-            dx: (Math.random() - 1.5) * 5,
-            dy: (Math.random() - 1.5) * 5,
+            radius: Math.ceil(Math.random() * 45 + 5),
+            dx: Math.ceil(Math.random() * 5),
+            dy: Math.ceil(Math.random() * 5),
             scribble_id: canvas_container.dataset.scribble_id
         }
+        console.log(shapeInfo)
         
     }
 
     function randomNote() {
         const notes = ["c", "c#", "db", "d", "eb", "e", "f", "f#", "g", "g#", "a", "ab", "a#", "b", "bb"];
 
-        const random = Math.floor(Math.random() * notes.length + 1);
+        const random = Math.floor(Math.random() * notes.length);
         return notes[random]
     }
 
     function randomOctave() {
         const octaves = ["1", "2", "3", "4", "5", "6", "7"];
 
-        const random = Math.floor(Math.random() * octaves.length + 1);
+        const random = Math.floor(Math.random() * octaves.length);
+
+        console.log("random octave = ", octaves[random])
+
         return octaves[random]
     }
 
@@ -200,8 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const updateCanvas = deletedCircle => {
-        console.log(deletedCircle)
-
         ///edit scribble shape array and DOM
         let updateScribbleShapes = []   
 
@@ -253,10 +259,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const circleElement = document.querySelector('#clicked-circle')
             //to get the last canvas in div canvases
             const lastCanvas = document.querySelector('.canvases').lastElementChild
-            console.log(e.target, circleElement, shapeInfo)
+            console.log(lastCanvas)
+            
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement && shapeInfo) {
-                console.log('here')
+                console.log("canvas width: ", lastCanvas.width, "canvas height: ", lastCanvas.height)
+
                 circleElement.id = 'unclicked-circle'
                 circleElement.classList.remove('bg-blue-500')
 
@@ -310,7 +318,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 xPosition = (e.clientX - rect.left) * scaleX
                 yPosition = (e.clientY - rect.top) * scaleY
-                // console.log('x', xPosition, 'y', yPosition)
                 checkElementPresent(xPosition, yPosition)
             }
         })
@@ -501,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // new Circle instance, push to global array
         let circle = new Circle(updatedCircle.posX, updatedCircle.posY, updatedCircle.dx, updatedCircle.dy, updatedCircle.radius, updatedCircle.color, updatedCircle.octave, updatedCircle.note, context, updatedCircle.id)
-        console.log("new circle: ", circle)
+        console.log("new updated circle: ", circle)
         scribble_shapes.push(circle)
         circle.draw()
         
@@ -706,7 +713,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch(SCRIBBLES_URL+scribId, {method: "DELETE"})
         .then(response => response.json())
         .then(scribble => {
-            console.log(scribble);
             deleteScribbleFromDOM();
             renderAvailableScribble();
         })
@@ -754,7 +760,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 sound.pause()
             }
         })
-        document.body.append(natureSelect)
+        // document.body.append(natureSelect)
+        let natureDiv = document.querySelector('#nature-music')
+        natureDiv.append(natureSelect)
+        let dropdown = document.querySelector('#select-dropdown')
+        natureSelect.className = 'cursor-pointer w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline'
+        dropdown.insertAdjacentElement('afterend', natureDiv)
     }
 
     backgroundSoundsHandler();

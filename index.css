@@ -26,14 +26,19 @@
 }
 
 canvas {
+
     position: absolute;
-    width: 950px;
-    height: 600px;
+    /* width: 950px;
+    height: 600px; */
+    width: inherit;
+    height: 100%;
 }
 
 .canvases {
-    width: 950px;
-    height: 600px;
+    /* width: 950px;
+    height: 600px; */
+    width: 80vw;
+    height: 100vh;
 }
 
 

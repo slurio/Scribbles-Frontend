@@ -3,9 +3,14 @@
     /* height: 110px; */
 }
 
+
+.nav-bar {
+    width: 70vw;
+}
+
 .element-editor-menu {
-    width: 950px;
-    height: 140px;
+    width: 70vw;
+    /* height: 140px; */
 }
 
 .play-graphic {
@@ -31,14 +36,14 @@ canvas {
     /* width: 950px;
     height: 600px; */
     width: inherit;
-    height: 100%;
+    height: inherit;
 }
 
 .canvases {
     /* width: 950px;
     height: 600px; */
-    width: 80vw;
-    height: 100vh;
+    width: 70vw;
+    height: 60vh;
 }
 
 
@@ -75,19 +80,6 @@ canvas {
     text-align: center;
 }
 
-/* .close-button {
-    float: right;
-    width: 1.5rem;
-    line-height: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    border-radius: 0.25rem;
-    background-color: lightgray;
-}
-
-.close-button:hover {
-    background-color: darkgray;
-} */
 
 .show-modal {
     opacity: 1;

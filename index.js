@@ -754,7 +754,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 sound.pause()
             }
         })
-        document.body.append(natureSelect)
+        // document.body.append(natureSelect)
+        let natureDiv = document.querySelector('#nature-music')
+        natureDiv.append(natureSelect)
+        let dropdown = document.querySelector('#select-dropdown')
+        natureSelect.className = 'cursor-pointer w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline'
+        dropdown.insertAdjacentElement('afterend', natureDiv)
     }
 
     const resizeHandler = () => {

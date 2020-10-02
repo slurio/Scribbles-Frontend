@@ -3,6 +3,11 @@
     /* height: 110px; */
 }
 
+.resize-animation-stopper * {
+    animation: none !important;
+    transition: none !important;
+  }
+
 
 .nav-bar {
     width: 70vw;

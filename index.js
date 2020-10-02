@@ -727,6 +727,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const backgroundSoundsHandler = () => {
+
+        let sound = new Audio()
+        sound.volume = .1
+        const natureSelect = document.createElement("select")
+        let natureSounds = {
+            none: "pause",
+            ocean: "assets/natureSounds/ocean.mp3",
+            rain: "assets/natureSounds/rain.mp3",
+            rainforest: "assets/natureSounds/rainforest.mp3",
+            creek: "assets/natureSounds/creek.mp3"
+        }
+        for (let nSound in natureSounds) {
+            let option = document.createElement("option")
+            option.text = nSound
+            option.value = natureSounds[nSound]
+            natureSelect.add(option)
+        }
+    
+        natureSelect.addEventListener("change", (e) => {
+            if (e.target.value != "pause") {
+                sound.src = e.target.value
+                sound.play()
+            } else {
+                sound.pause()
+            }
+        })
+        document.body.append(natureSelect)
+    }
+
+    backgroundSoundsHandler();
     addDropDownListener();
     addLogInListener();
     toggleLogInModal();

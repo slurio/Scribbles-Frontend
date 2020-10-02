@@ -74,7 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const clickHandler = () => {
+        
         document.addEventListener('click', e => {
+            console.log(e.target)
             if(e.target.matches('#unclicked-circle')) {
                 e.target.classList.add('bg-blue-500')
                 e.target.id = 'clicked-circle'
@@ -110,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         document.querySelector('#sound-button-off').style.display = "inline"
                     });
                 }    
-            }else if(e.target.matches('.svg-button-off') || e.target.matches('.st0')) {
+            }else if(e.target.matches('.svg-button-off') || e.target.matches('.st0') || e.target.matches('.st2')) {
                     tones.context.resume().then(function() {
                         document.querySelector('#sound-button').style.display = null
                         document.querySelector('#sound-button-off').style.display = "none"

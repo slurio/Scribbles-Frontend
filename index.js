@@ -120,8 +120,69 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (e.target.matches('#fullscreen')) {
                 let board = document.querySelector(".canvases")
                 board.requestFullscreen();
+            }else if(e.target.matches('.close-create-button')) {
+                toggleCreateShapeModal()
+            }else if(e.target.matches('.create-random-shape')) {
+                let newShapeModal = document.querySelector('.create-element-modal')
+                newShapeModal.classList.toggle('show-create-element-modal')
+                createRandomShape()
             }
         })
+    }
+
+    const createRandomShape = () => {
+        //to get the last canvas in div canvases
+        const lastCanvas = document.querySelector('.canvases').lastElementChild
+        const canvas_container = document.querySelector(".canvases");
+
+        //zIndex need to get
+        shapeInfo = {
+            z_index: parseInt(lastCanvas.style.zIndex) + 1,
+            color: getRandomColor(),
+            octave: randomOctave(),
+            note: randomNote(),
+            radius: Math.ceil(Math.random() * 45 + 5),
+            dx: Math.ceil(Math.random() * 5),
+            dy: Math.ceil(Math.random() * 5),
+            scribble_id: canvas_container.dataset.scribble_id
+        }
+        console.log(shapeInfo)
+        
+    }
+
+    function randomNote() {
+        const notes = ["c", "c#", "db", "d", "eb", "e", "f", "f#", "g", "g#", "a", "ab", "a#", "b", "bb"];
+
+        const random = Math.floor(Math.random() * notes.length);
+        return notes[random]
+    }
+
+    function randomOctave() {
+        const octaves = ["1", "2", "3", "4", "5", "6", "7"];
+
+        const random = Math.floor(Math.random() * octaves.length);
+
+        console.log("random octave = ", octaves[random])
+
+        return octaves[random]
+    }
+
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+
+    const toggleCreateShapeModal = () => {
+        let newShapeModal = document.querySelector('.create-element-modal')
+        newShapeModal.classList.toggle('show-create-element-modal')
+        let circleButton = document.querySelector('#clicked-circle')
+        circleButton.id = 'unclicked-circle'
+        circleButton.classList.remove('bg-blue-500')
     }
 
     const toggleNewScribbleModal = () => {

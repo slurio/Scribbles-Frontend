@@ -33,6 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas_container.dataset.scribble_id = scribble.id
         let bg_canvas = document.createElement("canvas");
         bg_canvas.id = "background-canvas"
+        bg_canvas.width = canvas_container.offsetWidth
+        bg_canvas.height = canvas_container.offsetHeight
         bg_canvas.dataset.bg_id =scribble.background_canvas.id
         bg_canvas.style.zIndex = scribble.background_canvas.z_index;
         bg_canvas.style.background = scribble.background_canvas.background_style
@@ -258,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const circleElement = document.querySelector('#clicked-circle')
             //to get the last canvas in div canvases
             const lastCanvas = document.querySelector('.canvases').lastElementChild
-            
+            console.log(lastCanvas)
             //click listner for scribble canvas to get mouse x/y position
             if(e.target === lastCanvas && circleElement && shapeInfo) {
                 circleElement.id = 'unclicked-circle'

@@ -54,12 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = canvas_container.offsetHeight
         canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
         canvas.style.zIndex = cirCan.z_index
+        canvas_container.append(canvas)
 
+        drawCircle(context, cirCan)
+    }
+
+    const drawCircle = (context, cirCan) => {
         let circle = new Circle(cirCan.posX, cirCan.posY, cirCan.dx, cirCan.dy, cirCan.radius, cirCan.color, cirCan.octave, cirCan.note, context, cirCan.id)
         scribble_shapes.push(circle)
-        circle.draw()
-
-        canvas_container.append(canvas)
+        circle.draw() 
     }
 
     const clickHandler = () => {
@@ -78,13 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 pauseAnimation()
             } else if(e.target.matches('#new-scribble')) {
                 toggleNewScribbleModal()
-                // newScribble()
             } else if(e.target.matches('#log-out')) {
                 clearCanvases()
                 clearWelcomeMessage()
                 toggleLogInModal()
             } else if (e.target.matches('#delete-scribble')) {
-                deleteScribbleFromDB();
+                deleteScribbleFromDB()
             }else if(e.target.matches('.close-edit-button')) {
                 const form = document.querySelector('.edit-element-form')
                 form.reset()
@@ -98,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     tones.context.suspend().then(function() {
                         document.querySelector('#sound-button').style.display = "none"
                         document.querySelector('#sound-button-off').style.display = "inline"
-                    });
+                    })
                 }    
             }else if(e.target.matches('.svg-button-off') || e.target.matches('.st0')) {
                     tones.context.resume().then(function() {
@@ -468,7 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const postScribble = (title) => {
         if(!title){
             let randId = Math.floor(Math.random() * Math.floor(1000))
-            name = "New Scribble" + randId
+            name = "Scribble" + randId
         }else {
             name = title
         }
@@ -610,6 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let dropDown = document.getElementById("scribble-select-menu")
         let optionToDelete = dropDown.options[dropDown.options.selectedIndex]
         let scribId = optionToDelete.value
+        
         fetch(SCRIBBLES_URL+scribId, {method: "DELETE"})
         .then(response => response.json())
         .then(scribble => {
@@ -661,13 +664,13 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         let natureDiv = document.querySelector('#nature-music')
         natureDiv.append(natureSelect)
-        let dropdown = document.querySelector('#select-dropdown')
+        let dropdown = document.querySelector('#sound-dropdown')
         natureSelect.className = 'cursor-pointer w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline'
         dropdown.insertAdjacentElement('afterend', natureDiv)
     }
 
     const resizeHandler = () => {
-        window.addEventListener("resize", (e) => {
+        window.addEventListener("resize", () => {
             clearTimeout(resizeTimer);
             document.body.classList.add("resize-animation-stopper");
             resizeTimer = setTimeout(() => {

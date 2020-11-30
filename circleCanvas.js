@@ -15,8 +15,6 @@ class Circle {
     draw() {
         this.context.shadowBlur = 5;
         this.context.shadowColor = "black";
-        // this.context.shadowOffsetX = 2;
-        // this.context.shadowOffsetY = 2;
         this.context.beginPath()
         this.context.fillStyle = this.color
         this.context.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2)
@@ -36,7 +34,6 @@ class Circle {
         if(this.posY + this.dY > canvas.height || this.posY + this.dY < 0) {
             this.dY = -this.dY;
             tones.play(this.note, this.octave);
-            console.log("tone played for Y boundary", this.note, this.octave)
         } else if (this.posX + this.dX > canvas.width || this.posX + this.dX < 0) {
             this.dX = -this.dX; 
             tones.play(this.note, this.octave);

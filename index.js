@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderCircle = (cirCan) => {
         let canvas_container = document.querySelector(".canvases");
         let canvas = document.createElement("canvas")
-        let context = canvas.getContext('2d')
+        let context = canvas.getContext("2d")
         
         canvas.dataset.id = cirCan.id
         canvas.width = canvas_container.offsetWidth
@@ -65,62 +65,93 @@ document.addEventListener('DOMContentLoaded', () => {
         circle.draw() 
     }
 
-    const clickHandler = () => {
-        document.addEventListener('click', e => {
+    const navBarHandler = () => {
+        const navBar = document.querySelector(".nav-bar")
+
+        navBar.addEventListener('click', e => {
+            if(e.target.matches('#new-scribble')) {
+                toggleNewScribbleModal()
+            } else if (e.target.matches('#delete-scribble')) {
+                deleteScribbleFromDB()
+            } else if (e.target.matches('#fullscreen')) {
+                let board = document.querySelector(".canvases")
+                board.requestFullscreen()
+            }else if(e.target.matches('#log-out')) {
+                clearCanvases()
+                clearWelcomeMessage()
+                toggleLogInModal()
+            } 
+        })
+    }
+
+    const editorMenuHandler = () => {
+        const editorMenu = document.querySelector(".element-editor-menu")
+
+        editorMenu.addEventListener('click', e => {
             if(e.target.matches('#unclicked-circle')) {
-                e.target.classList.add('bg-blue-500')
-                e.target.id = 'clicked-circle'
-                renderForm(e.target)
+                handleUnclickedCircle(e.target)
             } else if(e.target.matches('#clicked-circle')) {
-                e.target.id = 'unclicked-circle'
-                e.target.classList.remove('bg-blue-500')
-                document.querySelector('#element-form').remove()
+                handleClickedCircle(e.target)
             } else if(e.target.matches('#play-button') || e.target.matches('.play-graphic')) {
                 playAnimation()
             } else if(e.target.matches('#pause-button') || e.target.matches('.pause-graphic')) {
                 pauseAnimation()
-            } else if(e.target.matches('#new-scribble')) {
-                toggleNewScribbleModal()
-            } else if(e.target.matches('#log-out')) {
-                clearCanvases()
-                clearWelcomeMessage()
-                toggleLogInModal()
-            } else if (e.target.matches('#delete-scribble')) {
-                deleteScribbleFromDB()
-            }else if(e.target.matches('.close-edit-button')) {
-                const form = document.querySelector('.edit-element-form')
-                form.reset()
-                toggleEditModal()
-            }else if(e.target.matches('.close-bg-edit-button')) {
-                toggleEditBgModal()
-            }else if(e.target.matches('.delete-shape')){
-                deleteShape(e.target)
-            }else if(e.target.matches('.sound-graphic-on')){
-                if(tones.context.state === 'running') {
-                    tones.context.suspend().then(function() {
-                        document.querySelector('#sound-button').style.display = "none"
-                        document.querySelector('#sound-button-off').style.display = "inline"
-                    })
-                }    
+            } else if(e.target.matches('.sound-graphic-on')){
+                soundOn() 
             }else if(e.target.matches('.sound-graphic-off')) {
-                    tones.context.resume().then(function() {
-                        document.querySelector('#sound-button').style.display = null
-                        document.querySelector('#sound-button-off').style.display = "none"
-                })
-            } else if (e.target.matches('#fullscreen')) {
-                let board = document.querySelector(".canvases")
-                board.requestFullscreen();
-            }else if(e.target.matches('.close-create-button')) {
+                soundOff()
+            } 
+        })
+    }
+
+    const handleUnclickedCircle = circleTarget => {
+        circleTarget.classList.add('bg-blue-500')
+        circleTarget.id = 'clicked-circle'
+        renderForm(circleTarget)
+    }
+
+    const handleClickedCircle = circleTarget => {
+        circleTarget.id = 'unclicked-circle'
+        circleTarget.classList.remove('bg-blue-500')
+        document.querySelector('#element-form').remove()
+    }
+
+    const soundOn = () => {
+        if(tones.context.state === 'running') {
+            tones.context.suspend().then(function() {
+                document.querySelector('#sound-button').style.display = "none"
+                document.querySelector('#sound-button-off').style.display = "inline"
+            })
+        }   
+    }
+
+    const soundOff = () => {
+        tones.context.resume().then(function() {
+            document.querySelector('#sound-button').style.display = null
+            document.querySelector('#sound-button-off').style.display = "none"
+        })
+    }
+
+    const formHandler = () => {
+        document.addEventListener('click', e => {
+           if (e.target.matches('.delete-shape')){
+                deleteShape(e.target)
+            }  else if(e.target.matches('.close-edit-button')) {
+                document.querySelector('.edit-element-form').reset()
+                toggleEditModal()
+            } else if(e.target.matches('.close-bg-edit-button')) {
+                toggleEditBgModal()
+            } else if(e.target.matches('.close-create-button')) {
                 toggleCreateShapeModal()
             }else if(e.target.matches('.create-random-shape')) {
-                let newShapeModal = document.querySelector('.create-element-modal')
-                newShapeModal.classList.toggle('show-create-element-modal')
                 createRandomShape()
             }
         })
     }
 
     const createRandomShape = () => {
+        let newShapeModal = document.querySelector('.create-element-modal')
+        newShapeModal.classList.toggle('show-create-element-modal')
         const lastCanvas = document.querySelector('.canvases').lastElementChild
         const canvas_container = document.querySelector(".canvases")
 
@@ -173,11 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteShape = () => {
         let circleId = document.querySelector('.edit-element-form').dataset.circle_id
         toggleEditModal()
-        let options = {
-            method: "DELETE"
-        }
 
-        fetch(CIRCLES_URL + circleId, options)
+        fetch(CIRCLES_URL + circleId, {method: "DELETE"})
         .then(response => response.json())
         .then(deletedCircle => updateCanvas(deletedCircle))
     }
@@ -225,73 +253,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const scribbleHandler = () => {
         document.addEventListener('click', e => {
-            //check to see if circle was clicked
+
             const circleElement = document.querySelector('#clicked-circle')
-            //to get the last canvas in div canvases
             const lastCanvas = document.querySelector('.canvases').lastElementChild
-            //click listner for scribble canvas to get mouse x/y position
+
             if(e.target === lastCanvas && circleElement && shapeInfo) {
-                circleElement.id = 'unclicked-circle'
-                circleElement.classList.remove('bg-blue-500')
-
-                let z_index = parseInt(lastCanvas.style.zIndex) + 1
-
-                  //get x/y of mouse click
-                let rect = lastCanvas.getBoundingClientRect()
-                let scaleX = lastCanvas.width / rect.width
-                let scaleY = lastCanvas.height / rect.height
-
-                xPosition = (e.clientX - rect.left) * scaleX
-                yPosition = (e.clientY - rect.top) * scaleY
-                
-                let canvas_container = document.querySelector(".canvases");
-
-                
-                let circleObj = {
-                    posX: xPosition,
-                    posY: yPosition,
-                    dx: shapeInfo['dx'],
-                    dy: shapeInfo['dy'],
-                    color: shapeInfo['color'],
-                    radius: shapeInfo['radius'],
-                    octave: shapeInfo['octave'],
-                    note: shapeInfo['note'],
-                    z_index: z_index,
-                    scribble_id: canvas_container.dataset.scribble_id
-                }
-
-                let fetchOptions = {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accepts": "application/json"
-                    },
-                    body: JSON.stringify(circleObj)
-                }
-
-                fetch(CIRCLES_URL, fetchOptions)
-                .then(response => response.json())
-                .then(circleCanvas => renderCircle(circleCanvas))
-            
-                shapeInfo = {}
-            //To edit element shape    
+                createCircle(circleElement, lastCanvas)
             }else if(e.target === lastCanvas && !circleElement) {
-                //get x/y of mouse click
-                let rect = lastCanvas.getBoundingClientRect()
-                let scaleX = lastCanvas.width / rect.width
-                let scaleY = lastCanvas.height / rect.height
-
-                xPosition = (e.clientX - rect.left) * scaleX
-                yPosition = (e.clientY - rect.top) * scaleY
-
-                checkElementPresent(xPosition, yPosition)
+                checkElementPresent(lastCanvas, e)
             }
         })
     }
 
+    const createCircle = (circle, lastCanvas) => {
+        circle.id = 'unclicked-circle'
+        circle.classList.remove('bg-blue-500')
 
-    const checkElementPresent = (xPos, yPos) => {
+        let rect = lastCanvas.getBoundingClientRect()
+        let scaleX = lastCanvas.width / rect.width
+        let scaleY = lastCanvas.height / rect.height
+        
+        let circleObj = {
+            posX: (e.clientX - rect.left) * scaleX,
+            posY: (e.clientY - rect.top) * scaleY,
+            dx: shapeInfo['dx'],
+            dy: shapeInfo['dy'],
+            color: shapeInfo['color'],
+            radius: shapeInfo['radius'],
+            octave: shapeInfo['octave'],
+            note: shapeInfo['note'],
+            z_index: parseInt(lastCanvas.style.zIndex) + 1,
+            scribble_id: document.querySelector(".canvases").dataset.scribble_id
+        }
+
+        saveCircle(circleObj)
+    }
+
+    const saveCircle = circle => {
+        let fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accepts": "application/json"
+            },
+            body: JSON.stringify(circle)
+        }
+
+        fetch(CIRCLES_URL, fetchOptions)
+        .then(response => response.json())
+        .then(circleCanvas => {
+            renderCircle(circleCanvas,
+            shapeInfo = {}
+        )})
+    }
+
+
+    const checkElementPresent = (lastCanvas, e) => {
         let checkShapeClicked
+        let rect = lastCanvas.getBoundingClientRect()
+        let scaleX = lastCanvas.width / rect.width
+        let scaleY = lastCanvas.height / rect.height
+
+        xPos = (e.clientX - rect.left) * scaleX
+        yPos = (e.clientY - rect.top) * scaleY
 
         for(shape of scribble_shapes) {
             let context = shape.context
@@ -352,9 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveBackground(e.target)
             }else if(e.target.matches('.new-scribble-form')) {
                 toggleNewScribbleModal()
-                let title = e.target.title.value
                 e.target.reset()
-                newScribble(title)
+                newScribble(e.target.title.value)
             }
         })
     }
@@ -615,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         fetch(SCRIBBLES_URL+scribId, {method: "DELETE"})
         .then(response => response.json())
-        .then(scribble => {
+        .then(() => {
             deleteScribbleFromDOM();
             renderAvailableScribble();
         })
@@ -640,19 +663,17 @@ document.addEventListener('DOMContentLoaded', () => {
         let sound = new Audio()
         sound.volume = .1
         const natureSelect = document.createElement("select")
-        let natureSounds = {
-            none: "pause",
-            ocean: "assets/natureSounds/ocean.mp3",
-            rain: "assets/natureSounds/rain.mp3",
-            rainforest: "assets/natureSounds/rainforest.mp3",
-            creek: "assets/natureSounds/creek.mp3"
-        }
-        for (let nSound in natureSounds) {
-            let option = document.createElement("option")
-            nSound === 'none' ? option.text = 'no sound' : option.text = nSound
-            option.value = natureSounds[nSound]
-            natureSelect.add(option)
-        }
+
+        // let natureSounds = {
+        //     none: "pause",
+        //     ocean: "assets/natureSounds/ocean.mp3",
+        //     rain: "assets/natureSounds/rain.mp3",
+        //     rainforest: "assets/natureSounds/rainforest.mp3",
+        //     creek: "assets/natureSounds/creek.mp3"
+        // }
+
+        renderNatureSounds(natureSelect)
+        
     
         natureSelect.addEventListener("change", (e) => {
             if (e.target.value != "pause") {
@@ -667,6 +688,23 @@ document.addEventListener('DOMContentLoaded', () => {
         let dropdown = document.querySelector('#sound-dropdown')
         natureSelect.className = 'cursor-pointer w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline'
         dropdown.insertAdjacentElement('afterend', natureDiv)
+    }
+
+    const renderNatureSounds = natureSelect => {
+        let natureSounds = {
+            none: "pause",
+            ocean: "assets/natureSounds/ocean.mp3",
+            rain: "assets/natureSounds/rain.mp3",
+            rainforest: "assets/natureSounds/rainforest.mp3",
+            creek: "assets/natureSounds/creek.mp3"
+        }
+
+        for (let nSound in natureSounds) {
+            let option = document.createElement("option")
+            nSound === 'none' ? option.text = 'no sound' : option.text = nSound
+            option.value = natureSounds[nSound]
+            natureSelect.add(option)
+        }
     }
 
     const resizeHandler = () => {
@@ -687,14 +725,14 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    
+    editorMenuHandler()
+    navBarHandler()
     resizeHandler()
     backgroundSoundsHandler()
     addDropDownListener()
     addLogInListener()
     toggleLogInModal()
-    clickHandler()
+    formHandler()
     scribbleHandler()
-    submitHandler()
-
+    submitHandler() 
 })

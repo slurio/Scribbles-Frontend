@@ -95,14 +95,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 toggleEditBgModal()
             }else if(e.target.matches('.delete-shape')){
                 deleteShape(e.target)
-            }else if(e.target.matches('.svg-sound-on') || e.target.matches('.st0')){
+            }else if(e.target.matches('.sound-graphic-on')){
                 if(tones.context.state === 'running') {
                     tones.context.suspend().then(function() {
                         document.querySelector('#sound-button').style.display = "none"
                         document.querySelector('#sound-button-off').style.display = "inline"
                     })
                 }    
-            }else if(e.target.matches('.svg-button-off') || e.target.matches('.st0')) {
+            }else if(e.target.matches('.sound-graphic-off')) {
                     tones.context.resume().then(function() {
                         document.querySelector('#sound-button').style.display = null
                         document.querySelector('#sound-button-off').style.display = "none"
@@ -649,7 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         for (let nSound in natureSounds) {
             let option = document.createElement("option")
-            option.text = nSound
+            nSound === 'none' ? option.text = 'no sound' : option.text = nSound
             option.value = natureSounds[nSound]
             natureSelect.add(option)
         }

@@ -664,17 +664,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sound.volume = .1
         const natureSelect = document.createElement("select")
 
-        // let natureSounds = {
-        //     none: "pause",
-        //     ocean: "assets/natureSounds/ocean.mp3",
-        //     rain: "assets/natureSounds/rain.mp3",
-        //     rainforest: "assets/natureSounds/rainforest.mp3",
-        //     creek: "assets/natureSounds/creek.mp3"
-        // }
-
         renderNatureSounds(natureSelect)
         
-    
         natureSelect.addEventListener("change", (e) => {
             if (e.target.value != "pause") {
                 sound.src = e.target.value
@@ -683,11 +674,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 sound.pause()
             }
         })
-        let natureDiv = document.querySelector('#nature-music')
-        natureDiv.append(natureSelect)
-        let dropdown = document.querySelector('#sound-dropdown')
-        natureSelect.className = 'cursor-pointer w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline'
-        dropdown.insertAdjacentElement('afterend', natureDiv)
     }
 
     const renderNatureSounds = natureSelect => {
@@ -705,6 +691,16 @@ document.addEventListener('DOMContentLoaded', () => {
             option.value = natureSounds[nSound]
             natureSelect.add(option)
         }
+
+        renderSoundToDom(natureSelect)
+    }
+
+    const renderSoundToDom = natureSelect => {
+        let natureDiv = document.querySelector('#nature-music')
+        natureDiv.append(natureSelect)
+        let dropdown = document.querySelector('#sound-dropdown')
+        natureSelect.className = 'cursor-pointer w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline'
+        dropdown.insertAdjacentElement('afterend', natureDiv)
     }
 
     const resizeHandler = () => {

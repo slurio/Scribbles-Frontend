@@ -143,8 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 toggleEditBgModal()
             } else if(e.target.matches('.close-create-button')) {
                 toggleCreateShapeModal()
-            }else if(e.target.matches('.create-random-shape')) {
+            } else if(e.target.matches('.create-random-shape')) {
                 createRandomShape()
+            } else if(e.target.matches('.close-new-scribble-button')) {
+                toggleNewScribbleModal()
             }
         })
     }
@@ -258,14 +260,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const lastCanvas = document.querySelector('.canvases').lastElementChild
 
             if(e.target === lastCanvas && circleElement && shapeInfo) {
-                createCircle(circleElement, lastCanvas)
+                createCircle(circleElement, lastCanvas, e)
             }else if(e.target === lastCanvas && !circleElement) {
                 checkElementPresent(lastCanvas, e)
             }
         })
     }
 
-    const createCircle = (circle, lastCanvas) => {
+    const createCircle = (circle, lastCanvas, e) => {
         circle.id = 'unclicked-circle'
         circle.classList.remove('bg-blue-500')
 
@@ -376,8 +378,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveBackground(e.target)
             }else if(e.target.matches('.new-scribble-form')) {
                 toggleNewScribbleModal()
-                e.target.reset()
                 newScribble(e.target.title.value)
+                e.target.reset()
             }
         })
     }
@@ -608,18 +610,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const addToScribbleList = (scribble) => {
         let dropDown = document.getElementById("scribble-select-menu")
         let option = document.createElement("option")
+
         option.textContent = scribble.title
         option.value = scribble.id
         dropDown.append(option)
+        dropDown.value = scribble.id
     }
 
     const toggleLogInModal = () => {
-        let modal = document.querySelector(".modal");
+        let modal = document.querySelector(".modal")
         if (!!currentUserId) {
-            modal.classList.toggle("show-modal");
+            modal.classList.toggle("show-modal")
         } else if (currentUserId) {
             currentUserId = null
-            modal.classList.toggle("show-modal");
+            modal.classList.toggle("show-modal")
         }
     }
 

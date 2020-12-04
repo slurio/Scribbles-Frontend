@@ -13,6 +13,142 @@ document.addEventListener('DOMContentLoaded', () => {
     const BG_URL = "http://localhost:3000/background_canvases/"
     const USERS_URL = "http://localhost:3000/users/"
 
+    const addLogInListener = () => {
+        let userForm = document.querySelector(".login-form")
+        userForm.addEventListener("submit", (e) => {
+            e.preventDefault()
+            let username = userForm.username.value
+            setWelcomeMessage(username)
+            e.target.reset()
+            getUser(username)
+        })
+    }
+
+    const setWelcomeMessage = (username) => {
+        let welcomeMsg = document.querySelector(".welcome-user")
+        welcomeMsg.textContent = `Welcome ${username}!`
+    }
+    
+    const getUser = (username) => {
+        userObj = {
+            username: username
+        }
+
+        fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accepts": "application/json"
+            },
+            body: JSON.stringify(userObj)
+        }
+
+        fetch(USERS_URL, fetchOptions)
+        .then(response => response.json())
+        .then(user => renderUser(user))
+    }
+
+    const renderUser = userData => {
+        currentUserId = userData.id
+        renderScribbleList(userData.scribbles)
+
+        if(userData.scribbles.length === 0){
+            newScribble()
+        } else {
+            getScribble(userData.scribbles[0].id)
+        }
+        toggleLogInModal()
+    }
+
+    const renderScribbleList = (scribbles) => {
+        let dropDown = document.getElementById("scribble-select-menu")
+        removeAllChildNodes(dropDown)
+        for (let scribble of scribbles) {
+            addToScribbleList(scribble)
+        }
+    }
+
+    const newScribble = (title) => {
+        clearCanvases()
+        postScribble(title)
+    }
+
+    const clearCanvases = () => {
+        scribble_shapes = []
+        let canvas_container = document.querySelector(".canvases")
+        removeAllChildNodes(canvas_container)
+    }
+
+    const removeAllChildNodes = (parent) => {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild)
+        }
+    }
+
+    const postScribble = (title) => {
+        if(!title){
+            let randId = Math.floor(Math.random() * Math.floor(1000))
+            name = "Scribble" + randId
+        }else {
+            name = title
+        }
+        
+        let scribbleObj = {
+            title: name,
+            user_id: currentUserId
+        }
+
+        createNewScribble(scribbleObj)
+    }
+
+    const createNewScribble = scribbleObj => {
+        let fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accepts": "application/json"
+            },
+            body: JSON.stringify(scribbleObj)
+        }
+
+        fetch(SCRIBBLES_URL, fetchOptions)
+        .then(response => response.json())
+        .then(scribble => {
+            addToScribbleList(scribble)
+            newDefaultBackground(scribble)
+        })
+    }
+
+    const addToScribbleList = (scribble) => {
+        let dropDown = document.getElementById("scribble-select-menu")
+        let option = document.createElement("option")
+
+        option.textContent = scribble.title
+        option.value = scribble.id
+        dropDown.append(option)
+        dropDown.value = scribble.id
+    }
+
+    const newDefaultBackground = (scribble) => {
+        let bgObj = {
+            background_style: "white",
+            z_index: 1,
+            scribble_id: scribble.id
+        }
+
+        let fetchOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accepts": "application/json"
+            },
+            body: JSON.stringify(bgObj)
+        }
+
+        fetch(BG_URL, fetchOptions)
+        .then(response => response.json())
+        .then(bgCanvas => getScribble(bgCanvas.scribble.id))
+    }
 
     const getScribble = (scribble_id) => {  
         fetch(SCRIBBLES_URL + scribble_id)
@@ -45,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderCircleCanvases = (scribble) => scribble.circle_canvases.map(renderCircle)
 
     const renderCircle = (cirCan) => {
-        let canvas_container = document.querySelector(".canvases");
+        let canvas_container = document.querySelector(".canvases")
         let canvas = document.createElement("canvas")
         let context = canvas.getContext("2d")
         
@@ -84,6 +220,54 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
+    const toggleNewScribbleModal = () => {
+        let newScribModal = document.querySelector('.new-scribble-modal')
+        newScribModal.classList.toggle('show-new-scribble-modal')
+    }
+
+    const deleteScribbleFromDB = () => {
+        let dropDown = document.getElementById("scribble-select-menu")
+        let optionToDelete = dropDown.options[dropDown.options.selectedIndex]
+        let scribId = optionToDelete.value
+        
+        fetch(SCRIBBLES_URL+scribId, {method: "DELETE"})
+        .then(response => response.json())
+        .then(() => {
+            deleteScribbleFromDOM()
+            renderAvailableScribble()
+        })
+    }
+
+    const deleteScribbleFromDOM = () => {
+        let dropDown = document.getElementById("scribble-select-menu")
+        let optionToDelete = dropDown.options[dropDown.options.selectedIndex]
+        dropDown.removeChild(optionToDelete)
+    }
+
+    const renderAvailableScribble = () => {
+        let firstRemainingOption = document.getElementById("scribble-select-menu").options[0]
+        if (firstRemainingOption) {
+            getScribble(firstRemainingOption.value)
+        } else {
+            newScribble()
+        }
+    }
+
+    const clearWelcomeMessage = () => {
+        let welcomeMsg = document.querySelector(".welcome-user")
+        welcomeMsg.textContent = ""
+    }
+
+    const toggleLogInModal = () => {
+        let modal = document.querySelector(".modal")
+        if (!!currentUserId) {
+            modal.classList.toggle("show-modal")
+        } else if (currentUserId) {
+            currentUserId = null
+            modal.classList.toggle("show-modal")
+        }
+    }
+
     const editorMenuHandler = () => {
         const editorMenu = document.querySelector(".element-editor-menu")
 
@@ -96,11 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 playAnimation()
             } else if(e.target.matches('#pause-button') || e.target.matches('.pause-graphic')) {
                 pauseAnimation()
-            } else if(e.target.matches('.sound-graphic-on')){
-                soundOn() 
-            }else if(e.target.matches('.sound-graphic-off')) {
-                soundOff()
-            } 
+            }
         })
     }
 
@@ -110,26 +290,41 @@ document.addEventListener('DOMContentLoaded', () => {
         renderForm(circleTarget)
     }
 
+    const renderForm = () => {
+        let newShapeModal = document.querySelector('.create-element-modal')
+        newShapeModal.classList.toggle('show-create-element-modal')
+    }
+
     const handleClickedCircle = circleTarget => {
         circleTarget.id = 'unclicked-circle'
         circleTarget.classList.remove('bg-blue-500')
         document.querySelector('#element-form').remove()
     }
 
-    const soundOn = () => {
-        if(tones.context.state === 'running') {
-            tones.context.suspend().then(function() {
-                document.querySelector('#sound-button').style.display = "none"
-                document.querySelector('#sound-button-off').style.display = "inline"
-            })
-        }   
+    const playAnimation = () => {
+        if (!animating) {
+            animating = true
+            window.requestAnimationFrame(animateShapes)
+        }
     }
 
-    const soundOff = () => {
-        tones.context.resume().then(function() {
-            document.querySelector('#sound-button').style.display = null
-            document.querySelector('#sound-button-off').style.display = "none"
-        })
+    const animateShapes = () => {
+        if(animating) {
+            for(let shape of scribble_shapes) {
+                let canvas = document.querySelector(`[data-id='${shape.id}']`)
+                shape.clear(canvas)
+                shape.draw()
+                shape.checkBoundaries(canvas)
+                shape.nextStep()
+            }
+            window.requestAnimationFrame(animateShapes)
+        }
+    }
+    
+    const pauseAnimation = () => {
+        if (animating) {
+            animating = false
+        }
     }
 
     const formHandler = () => {
@@ -151,6 +346,47 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
+    const deleteShape = () => {
+        let circleId = document.querySelector('.edit-element-form').dataset.circle_id
+        toggleEditModal()
+
+        fetch(CIRCLES_URL + circleId, {method: "DELETE"})
+        .then(response => response.json())
+        .then(deletedCircle => updateCanvas(deletedCircle))
+    }
+
+    const toggleEditModal = () => {
+        let editModal = document.querySelector('.edit-element-modal')
+        editModal.classList.toggle('show-edit-modal')
+    }
+
+    const toggleEditBgModal = () => {
+        let bgModal = document.querySelector('.edit-bg-modal')
+        bgModal.classList.toggle('show-edit-bg-modal')
+    }
+
+    const toggleCreateShapeModal = () => {
+        let newShapeModal = document.querySelector('.create-element-modal')
+        newShapeModal.classList.toggle('show-create-element-modal')
+        let circleButton = document.querySelector('#clicked-circle')
+        circleButton.id = 'unclicked-circle'
+        circleButton.classList.remove('bg-blue-500')
+    }
+
+    const updateCanvas = deletedCircle => {
+        let updateScribbleShapes = []   
+
+        for(shape of scribble_shapes) {
+            if(shape.id !== deletedCircle.id) {
+                updateScribbleShapes.push(shape)
+            }
+        }
+
+        scribble_shapes = updateScribbleShapes
+        let oldCircle = document.querySelector(`[data-id='${deletedCircle.id}']`)
+        oldCircle.remove()
+    }
+
     const createRandomShape = () => {
         let newShapeModal = document.querySelector('.create-element-modal')
         newShapeModal.classList.toggle('show-create-element-modal')
@@ -170,12 +406,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function randomNote() {
-        const notes = ["c", "c#", "db", "d", "eb", "e", "f", "f#", "g", "g#", "a", "ab", "a#", "b", "bb"];
+        const notes = ["c", "c#", "db", "d", "eb", "e", "f", "f#", "g", "g#", "a", "ab", "a#", "b", "bb"]
         return notes[Math.floor(Math.random() * notes.length)]
     }
 
     function randomOctave() {
-        const octaves = ["1", "2", "3", "4", "5", "6", "7"];
+        const octaves = ["1", "2", "3", "4", "5", "6", "7"]
         return octaves[Math.floor(Math.random() * octaves.length)]
     }
 
@@ -188,77 +424,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return color
     }
 
-
-    const toggleCreateShapeModal = () => {
-        let newShapeModal = document.querySelector('.create-element-modal')
-        newShapeModal.classList.toggle('show-create-element-modal')
-        let circleButton = document.querySelector('#clicked-circle')
-        circleButton.id = 'unclicked-circle'
-        circleButton.classList.remove('bg-blue-500')
-    }
-
-    const toggleNewScribbleModal = () => {
-        let newScribModal = document.querySelector('.new-scribble-modal')
-        newScribModal.classList.toggle('show-new-scribble-modal')
-    }
-    
-
-    const deleteShape = () => {
-        let circleId = document.querySelector('.edit-element-form').dataset.circle_id
-        toggleEditModal()
-
-        fetch(CIRCLES_URL + circleId, {method: "DELETE"})
-        .then(response => response.json())
-        .then(deletedCircle => updateCanvas(deletedCircle))
-    }
-
-    const updateCanvas = deletedCircle => {
-        let updateScribbleShapes = []   
-
-        for(shape of scribble_shapes) {
-            if(shape.id !== deletedCircle.id) {
-                updateScribbleShapes.push(shape)
-            }
-        }
-
-        scribble_shapes = updateScribbleShapes
-        let oldCircle = document.querySelector(`[data-id='${deletedCircle.id}']`)
-        oldCircle.remove()
-    }
-
-    const pauseAnimation = () => {
-        if (animating) {
-            animating = false
-        }
-    }
-
-    const playAnimation = () => {
-        if (!animating) {
-            animating = true;
-            window.requestAnimationFrame(animateShapes)
-        }
-    }
-
-    const animateShapes = () => {
-        if(animating) {
-            for(let shape of scribble_shapes) {
-                let canvas = document.querySelector(`[data-id='${shape.id}']`)
-                shape.clear(canvas)
-                shape.draw()
-                shape.checkBoundaries(canvas)
-                shape.nextStep()
-            }
-            window.requestAnimationFrame(animateShapes)
-        }
-    }
-
-
     const scribbleHandler = () => {
         document.addEventListener('click', e => {
-
             const circleElement = document.querySelector('#clicked-circle')
             const lastCanvas = document.querySelector('.canvases').lastElementChild
-
+        
             if(e.target === lastCanvas && circleElement && shapeInfo) {
                 createCircle(circleElement, lastCanvas, e)
             }else if(e.target === lastCanvas && !circleElement) {
@@ -337,11 +507,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const toggleEditBgModal = () => {
-        let bgModal = document.querySelector('.edit-bg-modal')
-        bgModal.classList.toggle('show-edit-bg-modal')
-    }
-
     const renderEditElementForm = shape => {
         let editElementForm = document.querySelector('.edit-element-form')
         editElementForm.dataset.circle_id = shape.id
@@ -353,16 +518,6 @@ document.addEventListener('DOMContentLoaded', () => {
         editElementForm.dy.value = shape.dY
 
         toggleEditModal()
-    }
-
-    const toggleEditModal = () => {
-        let editModal = document.querySelector('.edit-element-modal')
-        editModal.classList.toggle('show-edit-modal')
-    }
-
-    const renderForm = () => {
-        let newShapeModal = document.querySelector('.create-element-modal')
-        newShapeModal.classList.toggle('show-create-element-modal')
     }
 
     const submitHandler = () => {
@@ -382,6 +537,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.target.reset()
             }
         })
+    }
+
+    const getElementFormInfo = target => {     
+        shapeInfo = {
+            color: target.color.value,
+            dx: target.dx.value,
+            dy: target.dy.value,
+            radius: target.radius.value,
+            octave: target.octave.value,
+            note: target.note.value
+        }
+
+        target.reset()
+
+        let newShapeModal = document.querySelector('.create-element-modal')
+        newShapeModal.classList.toggle('show-create-element-modal')
     }
 
     const saveBackground = target => {
@@ -411,12 +582,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const setBgFeatures = (bg, canvasContainer) => {
-        let bgCanvas = document.createElement("canvas");
+        let bgCanvas = document.createElement("canvas")
         bgCanvas.id = "background-canvas"
         bgCanvas.width = canvasContainer.offsetWidth
         bgCanvas.height = canvasContainer.offsetHeight
         bgCanvas.dataset.bg_id =bg.id
-        bgCanvas.style.zIndex = bg.z_index;
+        bgCanvas.style.zIndex = bg.z_index
         bgCanvas.style.background = bg.background_style
         bgCanvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
         return bgCanvas
@@ -452,179 +623,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
         fetch(CIRCLES_URL + shapeId, fetchOptions)
         .then(response => response.json())
-        .then(updatedCircleCanvas => getScribble(updatedCircleCanvas.scribble.id))      
+        .then(updatedCircle => renderCircleUpdate(updatedCircle))
     }
 
-    const getElementFormInfo = target => {
-        // target.dataset.shape = 'circle'
-        // const shape = target.dataset.shape
-     
-        shapeInfo = {
-            // shape: shape,
-            color: target.color.value,
-            dx: target.dx.value,
-            dy: target.dy.value,
-            radius: target.radius.value,
-            octave: target.octave.value,
-            note: target.note.value
+    const renderCircleUpdate = updatedCircle => {
+        updateShapes(updatedCircle)
+        createUpdatedCircleCanvas(updatedCircle)
+    }
+
+    const updateShapes = updatedCircle => {
+        let updateScribbleShapes = []   
+  
+        for(shape of scribble_shapes) {
+            if(shape.id !== updatedCircle.id) {
+                updateScribbleShapes.push(shape)
+            }
         }
 
-        target.reset()
-
-        let newShapeModal = document.querySelector('.create-element-modal')
-        newShapeModal.classList.toggle('show-create-element-modal')
+        scribble_shapes = updateScribbleShapes
     }
 
-    const newScribble = (title) => {
-        clearCanvases()
-        postScribble(title)
-    }
-
-    const clearCanvases = () => {
-        scribble_shapes = []
-        let canvas_container = document.querySelector(".canvases");
-        removeAllChildNodes(canvas_container)
-    }
-
-    const removeAllChildNodes = (parent) => {
-        while (parent.firstChild) {
-            parent.removeChild(parent.firstChild);
-        }
-    }
-
-    const postScribble = (title) => {
-        if(!title){
-            let randId = Math.floor(Math.random() * Math.floor(1000))
-            name = "Scribble" + randId
-        }else {
-            name = title
-        }
+    const createUpdatedCircleCanvas = (updatedCircle) => {
+        let canvas_container = document.querySelector(".canvases")
+        let canvas = document.createElement("canvas")
+        let context = canvas.getContext('2d')
         
-        let scribbleObj = {
-            title: name,
-            user_id: currentUserId
-        }
+        canvas.dataset.id = updatedCircle.id
+        canvas.width = canvas_container.offsetWidth
+        canvas.height = canvas_container.offsetHeight
+        canvas.className = "scribble-canvas m-2 border-2 border-gray-700 rounded-lg shadow-lg"
+        canvas.style.zIndex = updatedCircle.z_index
 
-        createNewScribble(scribbleObj)
+        drawCircle(context, updatedCircle)
+        
+        replaceOldCircle(canvas, updatedCircle.id)
     }
 
-    const createNewScribble = scribbleObj => {
-        let fetchOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accepts": "application/json"
-            },
-            body: JSON.stringify(scribbleObj)
-        }
-
-        fetch(SCRIBBLES_URL, fetchOptions)
-        .then(response => response.json())
-        .then(scribble => {
-            addToScribbleList(scribble)
-            newDefaultBackground(scribble)
-        })
-    }
-
-    const newDefaultBackground = (scribble) => {
-        let bgObj = {
-            background_style: "white",
-            z_index: 1,
-            scribble_id: scribble.id
-        }
-
-        let fetchOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accepts": "application/json"
-            },
-            body: JSON.stringify(bgObj)
-        }
-
-        fetch(BG_URL, fetchOptions)
-        .then(response => response.json())
-        .then(bgCanvas => getScribble(bgCanvas.scribble.id))
-    }
-
-    const addLogInListener = () => {
-        let userForm = document.querySelector(".login-form")
-        userForm.addEventListener("submit", (e) => {
-            e.preventDefault();
-            let username = userForm.username.value
-            setWelcomeMessage(username)
-            e.target.reset()
-            getUser(username)
-        })
-    }
-
-    const clearWelcomeMessage = () => {
-        let welcomeMsg = document.querySelector(".welcome-user")
-        welcomeMsg.textContent = ""
-    }
-
-    const setWelcomeMessage = (username) => {
-        let welcomeMsg = document.querySelector(".welcome-user")
-        welcomeMsg.textContent = `Welcome ${username}!`
-    }
-    
-    const getUser = (username) => {
-        userObj = {
-            username: username
-        }
-
-        fetchOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accepts": "application/json"
-            },
-            body: JSON.stringify(userObj)
-        }
-
-        fetch(USERS_URL, fetchOptions)
-        .then(response => response.json())
-        .then(user => renderUser(user))
-    }
-
-    const renderUser = userData => {
-        currentUserId = userData.id
-        renderScribbleList(userData.scribbles)
-
-        if(userData.scribbles.length === 0){
-            newScribble()
-        } else {
-            getScribble(userData.scribbles[0].id)
-        }
-        toggleLogInModal()
-    }
-
-    const renderScribbleList = (scribbles) => {
-        let dropDown = document.getElementById("scribble-select-menu")
-        removeAllChildNodes(dropDown)
-        for (let scribble of scribbles) {
-            addToScribbleList(scribble)
-        }
-    }
-
-    const addToScribbleList = (scribble) => {
-        let dropDown = document.getElementById("scribble-select-menu")
-        let option = document.createElement("option")
-
-        option.textContent = scribble.title
-        option.value = scribble.id
-        dropDown.append(option)
-        dropDown.value = scribble.id
-    }
-
-    const toggleLogInModal = () => {
-        let modal = document.querySelector(".modal")
-        if (!!currentUserId) {
-            modal.classList.toggle("show-modal")
-        } else if (currentUserId) {
-            currentUserId = null
-            modal.classList.toggle("show-modal")
-        }
+    const replaceOldCircle = (newCanvas, updateCircleId) => {
+        let oldCircle = document.querySelector(`[data-id='${updateCircleId}']`)
+        oldCircle.insertAdjacentElement('afterend', newCanvas)
+        oldCircle.remove()
     }
 
     const addDropDownListener = () => {
@@ -635,100 +673,27 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    const deleteScribbleFromDB = () => {
-        let dropDown = document.getElementById("scribble-select-menu")
-        let optionToDelete = dropDown.options[dropDown.options.selectedIndex]
-        let scribId = optionToDelete.value
-        
-        fetch(SCRIBBLES_URL+scribId, {method: "DELETE"})
-        .then(response => response.json())
-        .then(() => {
-            deleteScribbleFromDOM();
-            renderAvailableScribble();
-        })
-    }
-
-    const deleteScribbleFromDOM = () => {
-        let dropDown = document.getElementById("scribble-select-menu")
-        let optionToDelete = dropDown.options[dropDown.options.selectedIndex]
-        dropDown.removeChild(optionToDelete)
-    }
-
-    const renderAvailableScribble = () => {
-        let firstRemainingOption = document.getElementById("scribble-select-menu").options[0]
-        if (firstRemainingOption) {
-            getScribble(firstRemainingOption.value)
-        } else {
-            newScribble()
-        }
-    }
-
-    const backgroundSoundsHandler = () => {
-        let sound = new Audio()
-        sound.volume = .1
-        const natureSelect = document.createElement("select")
-
-        renderNatureSounds(natureSelect)
-        
-        natureSelect.addEventListener("change", (e) => {
-            if (e.target.value != "pause") {
-                sound.src = e.target.value
-                sound.play()
-            } else {
-                sound.pause()
-            }
-        })
-    }
-
-    const renderNatureSounds = natureSelect => {
-        let natureSounds = {
-            none: "pause",
-            ocean: "assets/natureSounds/ocean.mp3",
-            rain: "assets/natureSounds/rain.mp3",
-            rainforest: "assets/natureSounds/rainforest.mp3",
-            creek: "assets/natureSounds/creek.mp3"
-        }
-
-        for (let nSound in natureSounds) {
-            let option = document.createElement("option")
-            nSound === 'none' ? option.text = 'no sound' : option.text = nSound
-            option.value = natureSounds[nSound]
-            natureSelect.add(option)
-        }
-
-        renderSoundToDom(natureSelect)
-    }
-
-    const renderSoundToDom = natureSelect => {
-        let natureDiv = document.querySelector('#nature-music')
-        natureDiv.append(natureSelect)
-        let dropdown = document.querySelector('#sound-dropdown')
-        natureSelect.className = 'cursor-pointer w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline'
-        dropdown.insertAdjacentElement('afterend', natureDiv)
-    }
-
     const resizeHandler = () => {
         window.addEventListener("resize", () => {
-            clearTimeout(resizeTimer);
-            document.body.classList.add("resize-animation-stopper");
+            clearTimeout(resizeTimer)
+            document.body.classList.add("resize-animation-stopper")
             resizeTimer = setTimeout(() => {
                 for(let shape of scribble_shapes) {
-                    let canvas_container = document.querySelector(".canvases");
+                    let canvas_container = document.querySelector(".canvases")
                     let canvas = document.querySelector(`[data-id='${shape.id}']`)
                     shape.clear(canvas)
                     canvas.width = canvas_container.offsetWidth
                     canvas.height = canvas_container.offsetHeight
                     shape.draw()
                 }
-                document.body.classList.remove("resize-animation-stopper");
-            }, 200);
+                document.body.classList.remove("resize-animation-stopper")
+            }, 200)
         })
     }
 
     editorMenuHandler()
     navBarHandler()
     resizeHandler()
-    backgroundSoundsHandler()
     addDropDownListener()
     addLogInListener()
     toggleLogInModal()

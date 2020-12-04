@@ -678,6 +678,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(resizeTimer)
             document.body.classList.add("resize-animation-stopper")
             resizeTimer = setTimeout(() => {
+                console.log('line 2')
                 for(let shape of scribble_shapes) {
                     let canvas_container = document.querySelector(".canvases")
                     let canvas = document.querySelector(`[data-id='${shape.id}']`)

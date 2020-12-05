@@ -44,9 +44,9 @@ A user can:
 
 ## Installation Instructions
 
-### Frontend
+#### Frontend
 - Run open index.html
 
-### [Backend](https://github.com/slurio/Scribbles-Backend)
+#### [Backend](https://github.com/slurio/Scribbles-Backend)
 - Run bundle install
 - Run rails server

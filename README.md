@@ -1,7 +1,7 @@
 # Scribble
 
 Welcome to Scribble. A interactive art tool that lets you create your own animated art.
-Scribble was created to provide you a creative outlet as well as a form of relaxation. I hope you enjoy!
+Scribble was created to provide you a creative outlet as well as a form of relaxation. This project was built with [Anson Nickel](https://github.com/anickel101). I hope you enjoy!
 
 ## Video Demo
 

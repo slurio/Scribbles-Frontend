@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {  
     let scribble_shapes = []
-    let editXPos 
-    let editYPos 
     let currentUserId
     let animating = false
     let shapeInfo
@@ -494,8 +492,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if(context.isPointInPath(xPos, yPos)) {
                 renderEditElementForm(shape)
-                editXPos = xPos
-                editYPos = yPos
                 checkShapeClicked = shape
             } 
         }
@@ -596,9 +592,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateElementShape = target => {
         const circleId = target.dataset.circle_id
 
+        for(let shape of scribble_shapes) {
+            if(shape.id === parseInt(circleId)) {
+                updatedCircle = shape
+            }
+        }
+
         shapeInfo = {
-            posX: editXPos,
-            posY: editYPos,
+            posX: updatedCircle.posX,
+            posY: updatedCircle.posY,
             color: target.color.value,
             dx: target.dx.value,
             dy: target.dy.value,
@@ -678,14 +680,14 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(resizeTimer)
             document.body.classList.add("resize-animation-stopper")
             resizeTimer = setTimeout(() => {
-                console.log('line 2')
                 for(let shape of scribble_shapes) {
                     let canvas_container = document.querySelector(".canvases")
                     let canvas = document.querySelector(`[data-id='${shape.id}']`)
-                    shape.clear(canvas)
                     canvas.width = canvas_container.offsetWidth
                     canvas.height = canvas_container.offsetHeight
-                    shape.draw()
+
+                    shape.posX = 0
+                    shape.posY = 0
                 }
                 document.body.classList.remove("resize-animation-stopper")
             }, 200)

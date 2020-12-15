@@ -1,5 +1,4 @@
 (function(window) {
-    //tones below
     var tones = {
         context: new (window.AudioContext || window.webkitAudioContext)(),
         attack: 1,

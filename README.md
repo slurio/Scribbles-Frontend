@@ -7,10 +7,6 @@ Scribble was created to provide you a creative outlet as well as a form of relax
 
 https://www.loom.com/share/b476c3a24fc84540a461f1610d0a5fbb
 
-## Try It Live
-
-Coming Soon...
-
 ## Features
 
 A user must be logged in to create a scribble or view their scribbles, and the login will persist until the user clicks 'Logout'. 
